@@ -1,6 +1,6 @@
 #pragma once
 
-enum class MODE {
+enum class DRAW_MODE {
 	STATIC, DYNAMIC
 };
 
@@ -10,7 +10,7 @@ private:
 	unsigned int m_ID;
 
 public:
-	VertexBuffer(const void *data, unsigned int size, MODE mode);
+	VertexBuffer(const void *data, unsigned int size, DRAW_MODE mode);
 	~VertexBuffer();
 
 	void Bind() const;

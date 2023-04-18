@@ -3,8 +3,9 @@
 #include <vector>
 
 #include "Window.h"
-#include "renderer/VertexBuffer.h"
 #include "renderer/VertexArray.h"
+#include "renderer/VertexBuffer.h"
+#include "renderer/IndexBuffer.h"
 #include "renderer/Shader.h"
 #include "renderer/Camera.h"
 
@@ -38,14 +39,10 @@ int main()
     };
     
     VertexArray rectVA;
-    VertexBuffer rectVB(rect, sizeof(rect), MODE::STATIC);
+    VertexBuffer rectVB(rect, sizeof(rect), DRAW_MODE::STATIC);
     // bind vertex buffer to vertex array
     rectVA.AddBuffer(rectVB, layout);
-
-    unsigned int rectIB;
-    glGenBuffers(1, &rectIB);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rectIB);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    IndexBuffer rectIB(indices, sizeof(indices) / sizeof(unsigned int), DRAW_MODE::STATIC);
 
     // shaders
     std::string vertexFilepath = "res/shaders/vertex.shader";
@@ -177,7 +174,7 @@ int main()
         /* Render here */
         rectVA.Bind();
         shader.Bind();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, rectIB.GetCount(), GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(windowID);

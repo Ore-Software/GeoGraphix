@@ -3,14 +3,14 @@
 #include <iostream>
 #include "glad/glad.h"
 
-VertexBuffer::VertexBuffer(const void *data, unsigned int size, MODE mode)
+VertexBuffer::VertexBuffer(const void *data, unsigned int size, DRAW_MODE mode)
 {
 	glGenBuffers(1, &m_ID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_ID);
-	if (mode == MODE::STATIC) {
+	if (mode == DRAW_MODE::STATIC) {
 		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	}
-	else if (mode == MODE::DYNAMIC) {
+	else if (mode == DRAW_MODE::DYNAMIC) {
 		glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
 	}
 	else {
