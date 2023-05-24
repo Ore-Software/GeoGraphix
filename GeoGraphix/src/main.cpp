@@ -8,6 +8,8 @@
 #include "renderer/IndexBuffer.h"
 #include "renderer/Shader.h"
 #include "renderer/Camera.h"
+#include "HeightMap/HeightMap.h"
+#include "HeightMap/HeightMapUniform.h"
 
 int main()
 {
@@ -19,6 +21,11 @@ int main()
     VertexBufferLayout layout;
     layout.Push<float>(3); // 3d coordinates
     layout.Push<float>(4); // colors
+
+    int mapWidth = 100;
+    int mapLength = 100;
+
+    HeightMapUniform map = HeightMapUniform(mapWidth, mapLength, 1.0f);
 
     static const float rect[]
     {
