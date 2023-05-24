@@ -22,10 +22,43 @@ int main()
     layout.Push<float>(3); // 3d coordinates
     layout.Push<float>(4); // colors
 
-    int mapWidth = 100;
-    int mapLength = 100;
+    const int mapWidth = 100;
+    const int mapLength = 100;
 
     HeightMapUniform map = HeightMapUniform(mapWidth, mapLength, 1.0f);
+
+    // make the map from -10.0f to 10.0f, regardless of how many sample points are on the map
+    float heightMapVert[3 * mapWidth * mapLength]{}; // 3D location of each point
+    for (int i = 0; i < mapWidth; i++)
+    {
+        for (int j = 0; j < mapLength; j++)
+        {
+            // x value of the (i,j) point
+            heightMapVert[3 * i * j + 0] = 20.0f * i / mapWidth - 10.0f;
+            // y value of the (i,j) point
+            heightMapVert[3 * i * j + 1] = 20.0f * j / mapLength - 10.0f;
+            // z value of the (i,j) point
+            heightMapVert[3 * i * j + 2] = map.m_Map[j * mapWidth + i];
+        }
+    }
+
+    // if there are mapWidth x mapLength points, there will be (mapWidth - 1) x (mapLength - 1) squares, so 6 * (mapWidth - 1) x (mapLength - 1) indices
+    unsigned int mapVertIndices[6 * (mapWidth - 1) * (mapLength - 1)]{};
+    for (int i = 0; i < mapWidth - 1; i++)
+    {
+        for (int j = 0; j < mapLength - 1; j++)
+        {
+            // first triangle of the quad (bottom right)
+            mapVertIndices[6 * i * j + 0] = j * mapWidth + i;
+            mapVertIndices[6 * i * j + 1] = j * mapWidth + (i + 1);
+            mapVertIndices[6 * i * j + 2] = (j + 1) * mapWidth + (i + 1);
+
+            // second triangle of the quad (top left)
+            mapVertIndices[6 * i * j + 3] = (j + 1) * mapWidth + (i + 1);
+            mapVertIndices[6 * i * j + 4] = (j + 1) * mapWidth + i;
+            mapVertIndices[6 * i * j + 5] = j * mapWidth + i;
+        }
+    }
 
     static const float rect[]
     {
