@@ -66,6 +66,12 @@
     <ClCompile Include="src\HeightMapUniform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\HeightMap\HeightMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HeightMap\HeightMapUniform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\external\glm\detail\_features.hpp">
@@ -966,6 +972,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\HeightMapUniform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HeightMap\HeightMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HeightMap\HeightMapUniform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
