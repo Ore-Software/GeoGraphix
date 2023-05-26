@@ -20,7 +20,6 @@ int main()
 
     VertexBufferLayout layout;
     layout.Push<float>(3); // 3d coordinates
-    layout.Push<float>(4); // colors
 
     const int mapWidth = 100;
     const int mapLength = 100;
@@ -36,9 +35,9 @@ int main()
             // x value of the (i,j) point
             heightMapVert[3 * mapWidth * j + 3 * i + 0] = 20.0f * i / (mapWidth - 1) - 10.0f;
             // y value of the (i,j) point
-            heightMapVert[3 * mapWidth * j + 3 * i + 1] = 20.0f * j / (mapLength - 1) - 10.0f;
+            heightMapVert[3 * mapWidth * j + 3 * i + 1] = map.m_Map[j * mapWidth + i];
             // z value of the (i,j) point
-            heightMapVert[3 * mapWidth * j + 3 * i + 2] = map.m_Map[j * mapWidth + i];
+            heightMapVert[3 * mapWidth * j + 3 * i + 2] = 20.0f * j / (mapLength - 1) - 10.0f;
         }
     }
 
@@ -60,29 +59,11 @@ int main()
         }
     }
 
-    static const float rect[]
-    {
-        -10.0f,  0.0f, -10.0f,
-        1.0f, 0.0f, 0.0f, 1.0f,
-        10.0f,  0.0f, -10.0f, 
-        1.0f, 0.0f, 0.0f, 1.0f,
-        10.0f,  0.0f, 10.0f,
-        1.0f, 0.0f, 0.0f, 1.0f,
-        -10.0f,  0.0f, 10.0f,
-        1.0f, 0.0f, 0.0f, 1.0f
-    };
-
-    unsigned int indices[]
-    {
-        0, 1, 2,
-        2, 3, 0
-    };
-    
-    VertexArray rectVA;
-    VertexBuffer rectVB(rect, sizeof(rect), DRAW_MODE::STATIC);
+    VertexArray VA;
+    VertexBuffer VB(heightMapVert, sizeof(heightMapVert), DRAW_MODE::STATIC);
     // bind vertex buffer to vertex array
-    rectVA.AddBuffer(rectVB, layout);
-    IndexBuffer rectIB(indices, sizeof(indices) / sizeof(unsigned int), DRAW_MODE::STATIC);
+    VA.AddBuffer(VB, layout);
+    IndexBuffer IB(heightMapIndices, sizeof(heightMapIndices) / sizeof(unsigned int), DRAW_MODE::STATIC);
 
     // shaders
     std::string vertexFilepath = "res/shaders/vertex.shader";
@@ -91,11 +72,12 @@ int main()
     Shader shader(vertexFilepath, fragmentFilepath);
 
     // camera setup
-    double yaw = -135.0; // initially looks at the origin
-    double pitch = -30.0;
-    glm::vec3 cameraPosition = { 5.0f, 5.0f, 5.0f };
+    double yaw = -90.0;
+    double pitch = -45.0;
+    glm::vec3 cameraPosition = { 0.0f, 20.0f, 25.0f };
     Camera camera(cameraPosition, yaw, pitch);
     glm::mat4 modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
 
     // upload uniforms
@@ -108,6 +90,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
 
     GLFWwindow* windowID = window.GetID();
 
@@ -208,13 +191,13 @@ int main()
         }
 
         // clearing per frame
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.80f, 0.90f, 0.96f, 1.00f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         /* Render here */
-        rectVA.Bind();
+        VA.Bind();
         shader.Bind();
-        glDrawElements(GL_TRIANGLES, rectIB.GetCount(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, IB.GetCount(), GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(windowID);
