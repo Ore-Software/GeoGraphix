@@ -29,6 +29,7 @@
     <ClCompile Include="src\external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\HeightMap\HeightMap.cpp" />
     <ClCompile Include="src\HeightMap\HeightMapUniform.cpp" />
+    <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\renderer\Camera.cpp" />
     <ClCompile Include="src\renderer\IndexBuffer.cpp" />
@@ -333,6 +334,7 @@
     <ClInclude Include="src\HeightMapUniform.h" />
     <ClInclude Include="src\HeightMap\HeightMap.h" />
     <ClInclude Include="src\HeightMap\HeightMapUniform.h" />
+    <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\renderer\Camera.h" />
     <ClInclude Include="src\renderer\IndexBuffer.h" />
     <ClInclude Include="src\renderer\Shader.h" />
