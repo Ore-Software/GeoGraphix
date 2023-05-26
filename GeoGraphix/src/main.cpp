@@ -90,11 +90,12 @@ int main()
     Shader shader(vertexFilepath, fragmentFilepath);
 
     // camera setup
-    double yaw = -135.0; // initially looks at the origin
-    double pitch = -30.0;
-    glm::vec3 cameraPosition = { 5.0f, 5.0f, 5.0f };
+    double yaw = -90.0;
+    double pitch = -45.0;
+    glm::vec3 cameraPosition = { 0.0f, 20.0f, 25.0f };
     Camera camera(cameraPosition, yaw, pitch);
     glm::mat4 modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
 
     // upload uniforms
