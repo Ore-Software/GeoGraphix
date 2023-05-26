@@ -59,24 +59,6 @@ int main()
         }
     }
 
-    static const float rect[]
-    {
-        -10.0f,  0.0f, -10.0f,
-        1.0f, 0.0f, 0.0f, 1.0f,
-        10.0f,  0.0f, -10.0f, 
-        1.0f, 0.0f, 0.0f, 1.0f,
-        10.0f,  0.0f, 10.0f,
-        1.0f, 0.0f, 0.0f, 1.0f,
-        -10.0f,  0.0f, 10.0f,
-        1.0f, 0.0f, 0.0f, 1.0f
-    };
-
-    unsigned int indices[]
-    {
-        0, 1, 2,
-        2, 3, 0
-    };
-    
     VertexArray VA;
     VertexBuffer VB(heightMapVert, sizeof(heightMapVert), DRAW_MODE::STATIC);
     // bind vertex buffer to vertex array
@@ -108,7 +90,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
 
     GLFWwindow* windowID = window.GetID();
 
