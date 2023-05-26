@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Window.h"
+#include "Input.h"
 #include "renderer/VertexArray.h"
 #include "renderer/VertexBuffer.h"
 #include "renderer/IndexBuffer.h"
@@ -76,8 +77,10 @@ int main()
     double pitch = -45.0;
     glm::vec3 cameraPosition = { 0.0f, 20.0f, 25.0f };
     Camera camera(cameraPosition, yaw, pitch);
+
+    float rotationAngle = 45.0f; // rotation angle of the terrain mesh
     glm::mat4 modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
 
     // upload uniforms
@@ -94,18 +97,20 @@ int main()
 
     GLFWwindow* windowID = window.GetID();
 
+    // input initialization
+    Input input;
+    input.m_WindowID = windowID;
+
     // keyboard movement variables
     double currentTime = 0.0;
     double lastTime = 0.0;
     float deltaTime = 0.0f;
-    float forwardSpeed = 5.0f;
-    float strafeSpeed = 50.0f;
 
     // mouse movement variables
     double currXpos, currYpos, deltaX, deltaY;
     double lastXpos = 0.0;
     double lastYpos = 0.0;
-    double sens = 15.0;
+    double sens = 200.0;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(windowID))
@@ -114,69 +119,6 @@ int main()
         currentTime = glfwGetTime();
         deltaTime = float(currentTime - lastTime);
 
-        // camera updates per frame
-        camera.LookAt(yaw, pitch);
-        camera.SetViewMatrix();
-
-        // upload uniforms
-        shader.Bind();
-        shader.SetUniformMat4f("u_View", camera.GetViewMatrix());
-
-        // keyboard input
-        // Move forward
-        if (glfwGetKey(windowID, GLFW_KEY_W) == GLFW_PRESS)
-        {
-            /*cameraPosition += cameraFront * deltaTime * forwardSpeed;*/
-            camera.MoveCamera(camera.GetCameraFront(), deltaTime * forwardSpeed);
-        }
-        // Move backward
-        if (glfwGetKey(windowID, GLFW_KEY_S) == GLFW_PRESS)
-        {
-            camera.MoveCamera(-camera.GetCameraFront(), deltaTime * forwardSpeed);
-        }
-        // Strafe left
-        if (glfwGetKey(windowID, GLFW_KEY_A) == GLFW_PRESS)
-        {
-            /*cameraPosition += cameraRight * deltaTime * strafeSpeed;*/
-            camera.MoveCamera(camera.GetCameraRight(), deltaTime* forwardSpeed);
-        }
-        // Strafe right
-        if (glfwGetKey(windowID, GLFW_KEY_D) == GLFW_PRESS)
-        {
-            camera.MoveCamera(-camera.GetCameraRight(), deltaTime * forwardSpeed);
-        }
-        // fly up
-        if (glfwGetKey(windowID, GLFW_KEY_SPACE) == GLFW_PRESS)
-        {
-            camera.MoveCamera(camera.GetCameraUp(), deltaTime * forwardSpeed);
-        }
-        // drop down
-        if (glfwGetKey(windowID, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        {
-            camera.MoveCamera(-camera.GetCameraUp(), deltaTime * forwardSpeed);
-        }
-
-        // pitch up
-        if (glfwGetKey(windowID, GLFW_KEY_UP) == GLFW_PRESS)
-        {
-            pitch += sens * deltaTime;
-        }
-        // pitch down
-        if (glfwGetKey(windowID, GLFW_KEY_DOWN) == GLFW_PRESS)
-        {
-            pitch -= sens * deltaTime;
-        }
-        // yaw left
-        if (glfwGetKey(windowID, GLFW_KEY_LEFT) == GLFW_PRESS)
-        {
-            yaw -= sens * deltaTime;
-        }
-        // yaw right
-        if (glfwGetKey(windowID, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        {
-            yaw += sens * deltaTime;
-        }
-
         // mouse movement
         glfwGetCursorPos(windowID, &currXpos, &currYpos);
         deltaX = (currXpos - lastXpos) / screenWidth;  // it is bounded by -1 and 1
@@ -184,11 +126,15 @@ int main()
         lastXpos = currXpos;
         lastYpos = currYpos;
 
-        if (glfwGetMouseButton(windowID, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+        // rotate model according to mouse movement
+        if (input.IsMouseButtonDown(GLFW_MOUSE_BUTTON_1))
         {
-            yaw -= deltaX * sens;
-            pitch += deltaY * sens;
+            rotationAngle = deltaX * sens;
+            rotationAngle > 360.0f ? rotationAngle -= 360.0f : NULL;
+            modelMatrix = glm::rotate(modelMatrix, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
         }
+
+        shader.SetUniformMat4f("u_Model", modelMatrix);
 
         // clearing per frame
         glClearColor(0.80f, 0.90f, 0.96f, 1.00f);
