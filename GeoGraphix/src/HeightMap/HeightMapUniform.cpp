@@ -1,7 +1,7 @@
 #include "HeightMapUniform.h"
 
 HeightMapUniform::HeightMapUniform(int width, int length, float height)
-	: m_Width(width), m_Length(length), m_Height(height)
+	: HeightMap(width, length), m_Height(height)
 {
 	Generate();
 }

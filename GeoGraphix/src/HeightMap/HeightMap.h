@@ -8,5 +8,6 @@ public:
 
 	virtual void Generate() {};
 
-	std::vector<float> map;
+	std::vector<float> m_Map;
+	int m_Width, m_Length;
 };
