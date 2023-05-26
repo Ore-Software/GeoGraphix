@@ -1,14 +1,12 @@
 #pragma once
-#include <vector>
+#include "HeightMap.h"
 
-class HeightMapUniform
+class HeightMapUniform : public HeightMap
 {
 public:
 	HeightMapUniform(int width, int length, float height);
 
-	void Generate();
+	void Generate() override;
 
-	std::vector<float> m_Map;
-	int m_Width, m_Length;
 	float m_Height;
 };

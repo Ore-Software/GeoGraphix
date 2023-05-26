@@ -11,6 +11,7 @@
 #include "renderer/Camera.h"
 #include "HeightMap/HeightMap.h"
 #include "HeightMap/HeightMapUniform.h"
+#include "HeightMap/HeightMapRandom.h"
 
 int main()
 {
@@ -25,7 +26,8 @@ int main()
     const int mapWidth = 100;
     const int mapLength = 100;
 
-    HeightMapUniform map = HeightMapUniform(mapWidth, mapLength, 1.0f);
+    //HeightMap map = HeightMapUniform(mapWidth, mapLength, 1.0f);
+    HeightMap map = HeightMapRandom(mapWidth, mapLength);
 
     // make the map from -10.0f to 10.0f, regardless of how many sample points are on the map
     float heightMapVert[3 * mapWidth * mapLength]{}; // 3D location of each point
@@ -93,7 +95,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
 
     GLFWwindow* windowID = window.GetID();
 
