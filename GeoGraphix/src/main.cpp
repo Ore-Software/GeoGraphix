@@ -2,6 +2,10 @@
 #include <string>
 #include <vector>
 
+#include "external/imgui/imgui.h"
+#include "external/imgui/imgui_impl_glfw.h"
+#include "external/imgui/imgui_impl_opengl3.h"
+
 #include "Window.h"
 #include "Input.h"
 #include "renderer/VertexArray.h"
@@ -25,6 +29,14 @@ int main()
 
     const int mapWidth = 100;
     const int mapLength = 100;
+
+    enum algoMode
+    {
+        UNIFORM,
+        RANDOM
+    };
+
+    int currMode = UNIFORM;
 
     //HeightMap map = HeightMapUniform(mapWidth, mapLength, 1.0f);
     HeightMap map = HeightMapRandom(mapWidth, mapLength);
@@ -95,7 +107,8 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
+
+    bool wireframe = false;
 
     GLFWwindow* windowID = window.GetID();
 
@@ -113,6 +126,14 @@ int main()
     double lastXpos = 0.0;
     double lastYpos = 0.0;
     double sens = 200.0;
+
+    // Setup Dear ImGui context
+    ImGui::CreateContext();
+    // Setup Platform/Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(windowID, true);
+    ImGui_ImplOpenGL3_Init();
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(windowID))
@@ -147,12 +168,46 @@ int main()
         shader.Bind();
         glDrawElements(GL_TRIANGLES, IB.GetCount(), GL_UNSIGNED_INT, 0);
 
+        // imgui new frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        /*ImGui::SliderInt("Width vertices", &mapWidth, 2, 100);
+        ImGui::SliderInt("Length vertices", &mapLength, 2, 100);*/
+
+        ImGui::Begin("Terrain Controls");
+        if (ImGui::RadioButton("random mode", &currMode, UNIFORM))
+        {
+            // build the vertices
+        }
+        if (ImGui::RadioButton("uniform mode", &currMode, RANDOM))
+        {
+            // build the vertices
+        }
+
+        if (ImGui::Checkbox("wireframe mode", &wireframe))
+        {
+            if (wireframe)
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
+            else
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // surface mode
+        }
+            
+        ImGui::End();
+
+        ImGui::EndFrame();
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         /* Swap front and back buffers */
         glfwSwapBuffers(windowID);
 
         /* Poll for and process events */
         glfwPollEvents();
     }
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
 
     window.~Window();
     return 0;
