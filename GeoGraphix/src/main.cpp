@@ -20,7 +20,6 @@ int main()
 
     VertexBufferLayout layout;
     layout.Push<float>(3); // 3d coordinates
-    layout.Push<float>(4); // colors
 
     const int mapWidth = 100;
     const int mapLength = 100;
@@ -78,11 +77,11 @@ int main()
         2, 3, 0
     };
     
-    VertexArray rectVA;
-    VertexBuffer rectVB(rect, sizeof(rect), DRAW_MODE::STATIC);
+    VertexArray VA;
+    VertexBuffer VB(heightMapVert, sizeof(heightMapVert), DRAW_MODE::STATIC);
     // bind vertex buffer to vertex array
-    rectVA.AddBuffer(rectVB, layout);
-    IndexBuffer rectIB(indices, sizeof(indices) / sizeof(unsigned int), DRAW_MODE::STATIC);
+    VA.AddBuffer(VB, layout);
+    IndexBuffer IB(heightMapIndices, sizeof(heightMapIndices) / sizeof(unsigned int), DRAW_MODE::STATIC);
 
     // shaders
     std::string vertexFilepath = "res/shaders/vertex.shader";
@@ -108,6 +107,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     GLFWwindow* windowID = window.GetID();
 
@@ -208,13 +208,13 @@ int main()
         }
 
         // clearing per frame
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.80f, 0.90f, 0.96f, 1.00f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         /* Render here */
-        rectVA.Bind();
+        VA.Bind();
         shader.Bind();
-        glDrawElements(GL_TRIANGLES, rectIB.GetCount(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, IB.GetCount(), GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(windowID);
