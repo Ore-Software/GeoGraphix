@@ -35,9 +35,9 @@ int main()
             // x value of the (i,j) point
             heightMapVert[3 * mapWidth * j + 3 * i + 0] = 20.0f * i / (mapWidth - 1) - 10.0f;
             // y value of the (i,j) point
-            heightMapVert[3 * mapWidth * j + 3 * i + 1] = 20.0f * j / (mapLength - 1) - 10.0f;
+            heightMapVert[3 * mapWidth * j + 3 * i + 1] = map.m_Map[j * mapWidth + i];
             // z value of the (i,j) point
-            heightMapVert[3 * mapWidth * j + 3 * i + 2] = map.m_Map[j * mapWidth + i];
+            heightMapVert[3 * mapWidth * j + 3 * i + 2] = 20.0f * j / (mapLength - 1) - 10.0f;
         }
     }
 
