@@ -27,10 +27,10 @@ int main()
     VertexBufferLayout layout;
     layout.Push<float>(3); // 3d coordinates
 
-    const int mapWidth = 100;
-    const int mapLength = 100;
+    int mapWidth = 100;
+    int mapLength = 100;
 
-    enum algoMode
+     enum algoMode
     {
         UNIFORM,
         RANDOM
@@ -42,7 +42,7 @@ int main()
     HeightMap map = HeightMapRandom(mapWidth, mapLength);
 
     // make the map from -10.0f to 10.0f, regardless of how many sample points are on the map
-    float heightMapVert[3 * mapWidth * mapLength]{}; // 3D location of each point
+    float* heightMapVert = new float[3 * mapWidth * mapLength]{}; // 3D location of each point
     for (int j = 0; j < mapLength; j++)
     {
         for (int i = 0; i < mapWidth; i++)
@@ -57,7 +57,7 @@ int main()
     }
 
     // if there are mapWidth x mapLength points, there will be (mapWidth - 1) x (mapLength - 1) squares, so 6 * (mapWidth - 1) x (mapLength - 1) indices
-    unsigned int heightMapIndices[6 * (mapWidth - 1) * (mapLength - 1)]{};
+    unsigned int* heightMapIndices = new unsigned int[6 * (mapWidth - 1) * (mapLength - 1)]{};
     for (int j = 0; j < mapLength - 1; j++)
     {
         for (int i = 0; i < mapWidth - 1; i++)
@@ -75,10 +75,10 @@ int main()
     }
 
     VertexArray VA;
-    VertexBuffer VB(heightMapVert, sizeof(heightMapVert), DRAW_MODE::STATIC);
+    VertexBuffer VB(heightMapVert, 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
     // bind vertex buffer to vertex array
     VA.AddBuffer(VB, layout);
-    IndexBuffer IB(heightMapIndices, sizeof(heightMapIndices) / sizeof(unsigned int), DRAW_MODE::STATIC);
+    IndexBuffer IB(heightMapIndices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
 
     // shaders
     std::string vertexFilepath = "res/shaders/vertex.shader";
@@ -150,7 +150,7 @@ int main()
         lastYpos = currYpos;
 
         // rotate model according to mouse movement
-        if (input.IsMouseButtonDown(GLFW_MOUSE_BUTTON_1))
+        if (input.IsMouseButtonDown(GLFW_MOUSE_BUTTON_1) && !ImGui::GetIO().WantCaptureMouse)
         {
             rotationAngle = deltaX * sens;
             rotationAngle > 360.0f ? rotationAngle -= 360.0f : NULL;
@@ -173,8 +173,8 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        /*ImGui::SliderInt("Width vertices", &mapWidth, 2, 100);
-        ImGui::SliderInt("Length vertices", &mapLength, 2, 100);*/
+        ImGui::SliderInt("Width vertices", &mapWidth, 2, 100);
+        ImGui::SliderInt("Length vertices", &mapLength, 2, 100);
 
         ImGui::Begin("Terrain Controls");
         if (ImGui::RadioButton("random mode", &currMode, UNIFORM))
