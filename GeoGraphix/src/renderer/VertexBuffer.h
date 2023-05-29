@@ -13,6 +13,8 @@ public:
 	VertexBuffer(const void *data, unsigned int size, DRAW_MODE mode);
 	~VertexBuffer();
 
+	void AssignData(const void* data, unsigned int size, DRAW_MODE mode) const;
+
 	void Bind() const;
 	void Unbind() const;
 };

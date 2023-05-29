@@ -12,6 +12,8 @@ public:
 	IndexBuffer(const void* data, unsigned int count, DRAW_MODE mode);
 	~IndexBuffer();
 
+	void AssignData(const void* data, unsigned int count, DRAW_MODE mode);
+
 	void Bind() const;
 	void Unbind() const;
 

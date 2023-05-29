@@ -6,18 +6,7 @@
 VertexBuffer::VertexBuffer(const void *data, unsigned int size, DRAW_MODE mode)
 {
 	glGenBuffers(1, &m_ID);
-	glBindBuffer(GL_ARRAY_BUFFER, m_ID);
-	if (mode == DRAW_MODE::STATIC) {
-		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-	}
-	else if (mode == DRAW_MODE::DYNAMIC) {
-		glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
-	}
-	else {
-		glDeleteBuffers(1, &m_ID);
-		std::cout << "Buffer mode error." << std::endl;
-	}
-	
+	AssignData(data, size, mode);
 
 	int bufferSize;
 	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
@@ -31,6 +20,24 @@ VertexBuffer::VertexBuffer(const void *data, unsigned int size, DRAW_MODE mode)
 VertexBuffer::~VertexBuffer()
 {
 	glDeleteBuffers(1, &m_ID);
+}
+
+void VertexBuffer::AssignData(const void* data, unsigned int size, DRAW_MODE mode) const
+{
+	glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+	if (mode == DRAW_MODE::STATIC)
+	{
+		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+	}
+	else if (mode == DRAW_MODE::DYNAMIC)
+	{
+		glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
+	}
+	else
+	{
+		glDeleteBuffers(1, &m_ID);
+		std::cout << "Buffer mode error." << std::endl;
+	}
 }
 
 void VertexBuffer::Bind() const
