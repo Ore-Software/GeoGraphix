@@ -2,6 +2,10 @@
 #include <string>
 #include <vector>
 
+#include "external/imgui/imgui.h"
+#include "external/imgui/imgui_impl_glfw.h"
+#include "external/imgui/imgui_impl_opengl3.h"
+
 #include "Window.h"
 #include "Input.h"
 #include "renderer/VertexArray.h"
@@ -12,6 +16,7 @@
 #include "HeightMap/HeightMap.h"
 #include "HeightMap/HeightMapUniform.h"
 #include "HeightMap/HeightMapRandom.h"
+#include "Mesh.h"
 
 int main()
 {
@@ -23,50 +28,58 @@ int main()
     VertexBufferLayout layout;
     layout.Push<float>(3); // 3d coordinates
 
-    const int mapWidth = 100;
-    const int mapLength = 100;
+    int mapWidth = 100;
+    int mapLength = 100;
 
-    //HeightMap map = HeightMapUniform(mapWidth, mapLength, 1.0f);
+     enum algoMode
+    {
+        UNIFORM,
+        RANDOM
+    };
+
+    int currMode = RANDOM;
+
     HeightMap map = HeightMapRandom(mapWidth, mapLength);
 
+    Mesh mesh(map);
     // make the map from -10.0f to 10.0f, regardless of how many sample points are on the map
-    float heightMapVert[3 * mapWidth * mapLength]{}; // 3D location of each point
-    for (int j = 0; j < mapLength; j++)
-    {
-        for (int i = 0; i < mapWidth; i++)
-        {
-            // x value of the (i,j) point
-            heightMapVert[3 * mapWidth * j + 3 * i + 0] = 20.0f * i / (mapWidth - 1) - 10.0f;
-            // y value of the (i,j) point
-            heightMapVert[3 * mapWidth * j + 3 * i + 1] = map.m_Map[j * mapWidth + i];
-            // z value of the (i,j) point
-            heightMapVert[3 * mapWidth * j + 3 * i + 2] = 20.0f * j / (mapLength - 1) - 10.0f;
-        }
-    }
+    //float* heightMapVert = new float[3 * mapWidth * mapLength]{}; // 3D location of each point
+    //for (int j = 0; j < mapLength; j++)
+    //{
+    //    for (int i = 0; i < mapWidth; i++)
+    //    {
+    //        // x value of the (i,j) point
+    //        heightMapVert[3 * mapWidth * j + 3 * i + 0] = 20.0f * i / (mapWidth - 1) - 10.0f;
+    //        // y value of the (i,j) point
+    //        heightMapVert[3 * mapWidth * j + 3 * i + 1] = map.m_Map[j * mapWidth + i];
+    //        // z value of the (i,j) point
+    //        heightMapVert[3 * mapWidth * j + 3 * i + 2] = 20.0f * j / (mapLength - 1) - 10.0f;
+    //    }
+    //}
 
-    // if there are mapWidth x mapLength points, there will be (mapWidth - 1) x (mapLength - 1) squares, so 6 * (mapWidth - 1) x (mapLength - 1) indices
-    unsigned int heightMapIndices[6 * (mapWidth - 1) * (mapLength - 1)]{};
-    for (int j = 0; j < mapLength - 1; j++)
-    {
-        for (int i = 0; i < mapWidth - 1; i++)
-        {
-            // first triangle of the quad (bottom right)
-            heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 0] = j * mapWidth + i;
-            heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 1] = j * mapWidth + (i + 1);
-            heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 2] = (j + 1) * mapWidth + (i + 1);
+    //// if there are mapWidth x mapLength points, there will be (mapWidth - 1) x (mapLength - 1) squares, so 6 * (mapWidth - 1) x (mapLength - 1) indices
+    //unsigned int* heightMapIndices = new unsigned int[6 * (mapWidth - 1) * (mapLength - 1)]{};
+    //for (int j = 0; j < mapLength - 1; j++)
+    //{
+    //    for (int i = 0; i < mapWidth - 1; i++)
+    //    {
+    //        // first triangle of the quad (bottom right)
+    //        heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 0] = j * mapWidth + i;
+    //        heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 1] = j * mapWidth + (i + 1);
+    //        heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 2] = (j + 1) * mapWidth + (i + 1);
 
-            // second triangle of the quad (top left)
-            heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 3] = (j + 1) * mapWidth + (i + 1);
-            heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 4] = (j + 1) * mapWidth + i;
-            heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 5] = j * mapWidth + i;
-        }
-    }
+    //        // second triangle of the quad (top left)
+    //        heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 3] = (j + 1) * mapWidth + (i + 1);
+    //        heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 4] = (j + 1) * mapWidth + i;
+    //        heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 5] = j * mapWidth + i;
+    //    }
+    //}
 
     VertexArray VA;
-    VertexBuffer VB(heightMapVert, sizeof(heightMapVert), DRAW_MODE::STATIC);
+    VertexBuffer VB(mesh.m_Vertices, 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
     // bind vertex buffer to vertex array
     VA.AddBuffer(VB, layout);
-    IndexBuffer IB(heightMapIndices, sizeof(heightMapIndices) / sizeof(unsigned int), DRAW_MODE::STATIC);
+    IndexBuffer IB(mesh.m_Indices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
 
     // shaders
     std::string vertexFilepath = "res/shaders/vertex.shader";
@@ -95,7 +108,8 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
+
+    bool wireframe = false;
 
     GLFWwindow* windowID = window.GetID();
 
@@ -114,6 +128,14 @@ int main()
     double lastYpos = 0.0;
     double sens = 200.0;
 
+    // Setup Dear ImGui context
+    ImGui::CreateContext();
+    // Setup Platform/Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(windowID, true);
+    ImGui_ImplOpenGL3_Init();
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(windowID))
     {
@@ -129,7 +151,7 @@ int main()
         lastYpos = currYpos;
 
         // rotate model according to mouse movement
-        if (input.IsMouseButtonDown(GLFW_MOUSE_BUTTON_1))
+        if (input.IsMouseButtonDown(GLFW_MOUSE_BUTTON_1) && !ImGui::GetIO().WantCaptureMouse)
         {
             rotationAngle = deltaX * sens;
             rotationAngle > 360.0f ? rotationAngle -= 360.0f : NULL;
@@ -147,12 +169,58 @@ int main()
         shader.Bind();
         glDrawElements(GL_TRIANGLES, IB.GetCount(), GL_UNSIGNED_INT, 0);
 
+        // imgui new frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("Regenerate Terrain");
+
+        ImGui::Text("Height Map Type:");
+        ImGui::RadioButton("Random", &currMode, RANDOM);
+        ImGui::RadioButton("Uniform", &currMode, UNIFORM);
+
+        ImGui::SliderInt("Width", &mapWidth, 2, 100);
+        ImGui::SliderInt("Length", &mapLength, 2, 100);
+        if (ImGui::Button("Regenerate"))
+        {
+            switch (currMode)
+            {
+                case UNIFORM:
+                    map = HeightMapUniform(mapWidth, mapLength, 1.0f);
+                    break;
+                case RANDOM:
+                    map = HeightMapRandom(mapWidth, mapLength);
+                    break;
+            }
+            mesh.Regenerate(map);
+            VB.AssignData(mesh.m_Vertices, 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
+            IB.AssignData(mesh.m_Indices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
+        }
+
+        ImGui::Text("Options:");
+        if (ImGui::Checkbox("Wireframe", &wireframe))
+        {
+            if (wireframe)
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
+            else
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // surface mode
+        }
+
+        ImGui::End();
+
+        ImGui::EndFrame();
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         /* Swap front and back buffers */
         glfwSwapBuffers(windowID);
 
         /* Poll for and process events */
         glfwPollEvents();
     }
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
 
     window.~Window();
     return 0;

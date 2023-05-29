@@ -32,6 +32,7 @@
     <ClCompile Include="src\HeightMap\HeightMapUniform.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\renderer\Camera.cpp" />
     <ClCompile Include="src\renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\renderer\Shader.cpp" />
@@ -337,6 +338,7 @@
     <ClInclude Include="src\HeightMap\HeightMapRandom.h" />
     <ClInclude Include="src\HeightMap\HeightMapUniform.h" />
     <ClInclude Include="src\Input.h" />
+    <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\renderer\Camera.h" />
     <ClInclude Include="src\renderer\IndexBuffer.h" />
     <ClInclude Include="src\renderer\Shader.h" />
