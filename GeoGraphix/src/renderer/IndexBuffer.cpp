@@ -8,6 +8,25 @@ IndexBuffer::IndexBuffer(const void* data, unsigned int count, DRAW_MODE mode)
 	: m_Count(count)
 {
 	glGenBuffers(1, &m_ID);
+	AssignData(data, count, mode);
+
+	int bufferSize;
+	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
+	if (m_Count * sizeof(unsigned int) != bufferSize)
+	{
+		glDeleteBuffers(1, &m_ID);
+		std::cout << "Buffer error." << std::endl;
+	}
+}
+
+IndexBuffer::~IndexBuffer()
+{
+	glDeleteBuffers(1, &m_ID);
+}
+
+void IndexBuffer::AssignData(const void* data, unsigned int count, DRAW_MODE mode)
+{
+	m_Count = count;
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);
 	if (mode == DRAW_MODE::STATIC)
 	{
@@ -22,19 +41,6 @@ IndexBuffer::IndexBuffer(const void* data, unsigned int count, DRAW_MODE mode)
 		glDeleteBuffers(1, &m_ID);
 		std::cout << "Buffer mode error." << std::endl;
 	}
-
-	int bufferSize;
-	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-	if (m_Count * sizeof(unsigned int) != bufferSize)
-	{
-		glDeleteBuffers(1, &m_ID);
-		std::cout << "Buffer error." << std::endl;
-	}
-}
-
-IndexBuffer::~IndexBuffer()
-{
-	glDeleteBuffers(1, &m_ID);
 }
 
 void IndexBuffer::Bind() const

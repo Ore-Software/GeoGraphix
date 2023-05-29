@@ -72,6 +72,9 @@
     <ClCompile Include="src\HeightMap\HeightMapRandom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\external\glm\detail\_features.hpp">
@@ -984,6 +987,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\HeightMap\HeightMapRandom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -16,6 +16,7 @@
 #include "HeightMap/HeightMap.h"
 #include "HeightMap/HeightMapUniform.h"
 #include "HeightMap/HeightMapRandom.h"
+#include "Mesh.h"
 
 int main()
 {
@@ -36,49 +37,49 @@ int main()
         RANDOM
     };
 
-    int currMode = UNIFORM;
+    int currMode = RANDOM;
 
-    //HeightMap map = HeightMapUniform(mapWidth, mapLength, 1.0f);
     HeightMap map = HeightMapRandom(mapWidth, mapLength);
 
+    Mesh mesh(map);
     // make the map from -10.0f to 10.0f, regardless of how many sample points are on the map
-    float* heightMapVert = new float[3 * mapWidth * mapLength]{}; // 3D location of each point
-    for (int j = 0; j < mapLength; j++)
-    {
-        for (int i = 0; i < mapWidth; i++)
-        {
-            // x value of the (i,j) point
-            heightMapVert[3 * mapWidth * j + 3 * i + 0] = 20.0f * i / (mapWidth - 1) - 10.0f;
-            // y value of the (i,j) point
-            heightMapVert[3 * mapWidth * j + 3 * i + 1] = map.m_Map[j * mapWidth + i];
-            // z value of the (i,j) point
-            heightMapVert[3 * mapWidth * j + 3 * i + 2] = 20.0f * j / (mapLength - 1) - 10.0f;
-        }
-    }
+    //float* heightMapVert = new float[3 * mapWidth * mapLength]{}; // 3D location of each point
+    //for (int j = 0; j < mapLength; j++)
+    //{
+    //    for (int i = 0; i < mapWidth; i++)
+    //    {
+    //        // x value of the (i,j) point
+    //        heightMapVert[3 * mapWidth * j + 3 * i + 0] = 20.0f * i / (mapWidth - 1) - 10.0f;
+    //        // y value of the (i,j) point
+    //        heightMapVert[3 * mapWidth * j + 3 * i + 1] = map.m_Map[j * mapWidth + i];
+    //        // z value of the (i,j) point
+    //        heightMapVert[3 * mapWidth * j + 3 * i + 2] = 20.0f * j / (mapLength - 1) - 10.0f;
+    //    }
+    //}
 
-    // if there are mapWidth x mapLength points, there will be (mapWidth - 1) x (mapLength - 1) squares, so 6 * (mapWidth - 1) x (mapLength - 1) indices
-    unsigned int* heightMapIndices = new unsigned int[6 * (mapWidth - 1) * (mapLength - 1)]{};
-    for (int j = 0; j < mapLength - 1; j++)
-    {
-        for (int i = 0; i < mapWidth - 1; i++)
-        {
-            // first triangle of the quad (bottom right)
-            heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 0] = j * mapWidth + i;
-            heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 1] = j * mapWidth + (i + 1);
-            heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 2] = (j + 1) * mapWidth + (i + 1);
+    //// if there are mapWidth x mapLength points, there will be (mapWidth - 1) x (mapLength - 1) squares, so 6 * (mapWidth - 1) x (mapLength - 1) indices
+    //unsigned int* heightMapIndices = new unsigned int[6 * (mapWidth - 1) * (mapLength - 1)]{};
+    //for (int j = 0; j < mapLength - 1; j++)
+    //{
+    //    for (int i = 0; i < mapWidth - 1; i++)
+    //    {
+    //        // first triangle of the quad (bottom right)
+    //        heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 0] = j * mapWidth + i;
+    //        heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 1] = j * mapWidth + (i + 1);
+    //        heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 2] = (j + 1) * mapWidth + (i + 1);
 
-            // second triangle of the quad (top left)
-            heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 3] = (j + 1) * mapWidth + (i + 1);
-            heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 4] = (j + 1) * mapWidth + i;
-            heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 5] = j * mapWidth + i;
-        }
-    }
+    //        // second triangle of the quad (top left)
+    //        heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 3] = (j + 1) * mapWidth + (i + 1);
+    //        heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 4] = (j + 1) * mapWidth + i;
+    //        heightMapIndices[6 * (mapWidth - 1) * j + 6 * i + 5] = j * mapWidth + i;
+    //    }
+    //}
 
     VertexArray VA;
-    VertexBuffer VB(heightMapVert, 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
+    VertexBuffer VB(mesh.m_Vertices, 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
     // bind vertex buffer to vertex array
     VA.AddBuffer(VB, layout);
-    IndexBuffer IB(heightMapIndices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
+    IndexBuffer IB(mesh.m_Indices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
 
     // shaders
     std::string vertexFilepath = "res/shaders/vertex.shader";
@@ -173,27 +174,39 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::SliderInt("Width vertices", &mapWidth, 2, 100);
-        ImGui::SliderInt("Length vertices", &mapLength, 2, 100);
+        ImGui::Begin("Regenerate Terrain");
 
-        ImGui::Begin("Terrain Controls");
-        if (ImGui::RadioButton("random mode", &currMode, UNIFORM))
+        ImGui::Text("Height Map Type:");
+        ImGui::RadioButton("Random", &currMode, RANDOM);
+        ImGui::RadioButton("Uniform", &currMode, UNIFORM);
+
+        ImGui::SliderInt("Width", &mapWidth, 2, 100);
+        ImGui::SliderInt("Length", &mapLength, 2, 100);
+        if (ImGui::Button("Regenerate"))
         {
-            // build the vertices
-        }
-        if (ImGui::RadioButton("uniform mode", &currMode, RANDOM))
-        {
-            // build the vertices
+            switch (currMode)
+            {
+                case UNIFORM:
+                    map = HeightMapUniform(mapWidth, mapLength, 1.0f);
+                    break;
+                case RANDOM:
+                    map = HeightMapRandom(mapWidth, mapLength);
+                    break;
+            }
+            mesh.Regenerate(map);
+            VB.AssignData(mesh.m_Vertices, 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
+            IB.AssignData(mesh.m_Indices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
         }
 
-        if (ImGui::Checkbox("wireframe mode", &wireframe))
+        ImGui::Text("Options:");
+        if (ImGui::Checkbox("Wireframe", &wireframe))
         {
             if (wireframe)
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
             else
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // surface mode
         }
-            
+
         ImGui::End();
 
         ImGui::EndFrame();
