@@ -18,12 +18,26 @@ void main()
 	vec3 l = normalize(light_pos.xyz - view_pos.xyz);
 	vec3 h = normalize(v + l);
 
-	if (pos.y > 0.5)
+	if (pos.y > 0.75)
+	{
+		ka = vec3(0.0, 0.25, 0.0);
+		kd = vec3(0.0, 0.5, 0.0);
+		ks = vec3(0.5, 0.5, 0.5);
+		p = 50.0f;
+	}
+	else if (pos.y > 0.5)
 	{
 		ka = vec3(0.0, 0.125, 0.0);
 		kd = vec3(0.0, 0.25, 0.0);
 		ks = vec3(0.5, 0.5, 0.5);
 		p = 50.0f;
+	}
+	else if (pos.y > 0.25)
+	{
+		ka = vec3(0, 0, 0.4);
+		kd = vec3(0, 0, 0.8);
+		ks = vec3(0.8, 0.8, 0.8);
+		p = 500.0f;
 	}
 	else
 	{

@@ -17,7 +17,7 @@ void main()
     view_pos = u_View * u_Model * vec4(pos, 1.0);
     mat4 normalmatrix = transpose(inverse(u_Model));
     view_pos_normal = (normalmatrix * vec4(pos.xyz, 1.0)).xyz;
-    light_pos = u_Projection * u_View * vec4(0, 10, 0, 1);
+    light_pos = u_Projection * u_View * vec4(0, 20, 10, 1);
 
     gl_Position = u_Projection * u_View * u_Model * vec4(position, 1.0f);
 };
