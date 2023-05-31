@@ -20,7 +20,7 @@ private:
 
 	float smooth_step(float f);
 
-	glm::vec3 smooth_step(glm::vec3 f3);
+	glm::vec2 smooth_step(glm::vec2 f2);
 
 	glm::vec2 random2(glm::vec3 seed);
 
