@@ -16,6 +16,7 @@
 #include "HeightMap/HeightMap.h"
 #include "HeightMap/HeightMapUniform.h"
 #include "HeightMap/HeightMapRandom.h"
+#include "HeightMap/HeightMapPerlin.h"
 #include "Mesh.h"
 
 int main()
@@ -34,7 +35,8 @@ int main()
      enum algoMode
     {
         UNIFORM,
-        RANDOM
+        RANDOM,
+        PERLIN
     };
 
     int currMode = RANDOM;
@@ -179,6 +181,7 @@ int main()
         ImGui::Text("Height Map Type:");
         ImGui::RadioButton("Random", &currMode, RANDOM);
         ImGui::RadioButton("Uniform", &currMode, UNIFORM);
+        ImGui::RadioButton("Perlin Noise", &currMode, PERLIN);
 
         ImGui::SliderInt("Width", &mapWidth, 2, 100);
         ImGui::SliderInt("Length", &mapLength, 2, 100);
@@ -191,6 +194,9 @@ int main()
                     break;
                 case RANDOM:
                     map = HeightMapRandom(mapWidth, mapLength);
+                    break;
+                case PERLIN:
+                    map = HeightMapPerlin(mapWidth, mapLength);
                     break;
             }
             mesh.Regenerate(map);
