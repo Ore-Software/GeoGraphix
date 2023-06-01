@@ -155,7 +155,7 @@ int main()
             switch (currMode)
             {
                 case UNIFORM:
-                    map = HeightMapUniform(mapWidth, mapLength, 1.0f);
+                    map = HeightMapUniform(mapWidth, mapLength, 0.5f);
                     break;
                 case RANDOM:
                     map = HeightMapRandom(mapWidth, mapLength);
