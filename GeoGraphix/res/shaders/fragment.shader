@@ -15,9 +15,9 @@ void main()
 	float p; // phong exponent
 	vec3 n = normalize(view_pos_normal);
 	vec3 v = normalize(-view_pos.xyz);
-	vec3 l = normalize(light_pos.xyz);
+	vec3 l = normalize(light_pos.xyz - view_pos.xyz);
 	vec3 h = normalize(v + l);
-	vec3 I = vec3(5, 5, 5); // light intensity of light
+	vec3 I = vec3(2, 2, 2); // light intensity of light
 
 	if (pos.y > 0.75)
 	{
@@ -45,7 +45,7 @@ void main()
 		ka = vec3(0, 0, 0.25);
 		kd = vec3(0, 0, 0.5);
 		ks = vec3(0.8, 0.8, 0.8);
-		p = 500.0f;
+		p = 5000.0f;
 	}
 
 	color = vec4(ka * 0.2 + kd * I * max(0.0, dot(n, l)) + ks * I * pow(max(0, dot(n, h)), p), 1.0);

@@ -1,6 +1,7 @@
 #version 460 core
 
 layout(location = 0) in vec3 position;
+layout(location = 1) in vec3 normal;
 
 out vec3 pos;
 out vec4 view_pos;
@@ -16,8 +17,8 @@ void main()
     pos = position;
     view_pos = u_Model * vec4(pos, 1.0);
     mat4 normalmatrix = transpose(inverse(u_Model));
-    view_pos_normal = (normalmatrix * vec4(pos.xyz, 1.0)).xyz;
-    light_pos = u_Projection * vec4(0, 100, 0, 1); // light is straight above
+    view_pos_normal = (normalmatrix * vec4(normal.xyz, 1.0)).xyz;
+    light_pos = u_Projection * vec4(0, 10, 0, 1); // light is straight above
 
-    gl_Position = u_Projection * u_View * u_Model * vec4(position, 1.0f);
+    gl_Position = u_Projection * u_View * u_Model * vec4(pos, 1.0f);
 };
