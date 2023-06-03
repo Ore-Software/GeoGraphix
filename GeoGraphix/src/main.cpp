@@ -28,6 +28,7 @@ int main()
 
     VertexBufferLayout layout;
     layout.Push<float>(3); // 3d coordinates
+    layout.Push<float>(3); // normals
 
     int mapWidth = 50;
     int mapLength = 50;
@@ -46,7 +47,7 @@ int main()
     Mesh mesh(map);
 
     VertexArray VA;
-    VertexBuffer VB(mesh.m_Vertices, 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
+    VertexBuffer VB(mesh.m_Vertices, 2 * 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
     // bind vertex buffer to vertex array
     VA.AddBuffer(VB, layout);
     IndexBuffer IB(mesh.m_Indices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
@@ -56,7 +57,7 @@ int main()
     std::string fragmentFilepath = "res/shaders/fragment.shader";
 
     Shader shader(vertexFilepath, fragmentFilepath);
-
+    
     // camera setup
     double yaw = -90.0;
     double pitch = -45.0;
@@ -158,7 +159,7 @@ int main()
             switch (currMode)
             {
                 case UNIFORM:
-                    map = HeightMapUniform(mapWidth, mapLength, 1.0f);
+                    map = HeightMapUniform(mapWidth, mapLength, 0.5f);
                     break;
                 case RANDOM:
                     map = HeightMapRandom(mapWidth, mapLength);
@@ -168,7 +169,7 @@ int main()
                     break;
             }
             mesh.Regenerate(map);
-            VB.AssignData(mesh.m_Vertices, 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
+            VB.AssignData(mesh.m_Vertices, 2 * 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
             IB.AssignData(mesh.m_Indices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
         }
 

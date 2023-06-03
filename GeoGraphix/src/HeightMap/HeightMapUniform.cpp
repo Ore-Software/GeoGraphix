@@ -8,5 +8,6 @@ HeightMapUniform::HeightMapUniform(int width, int length, float height)
 
 void HeightMapUniform::Generate()
 {
-	m_Map.resize(m_Width * m_Length, m_Height);
+	for(int i = 0; i < m_Width * m_Length; i++)
+		m_Map[i] = m_Height;
 }
