@@ -30,8 +30,8 @@ int main()
     layout.Push<float>(3); // 3d coordinates
     layout.Push<float>(3); // normals
 
-    int mapWidth = 50;
-    int mapLength = 50;
+    int mapWidth = 25;
+    int mapLength = 25;
 
      enum algoMode
     {
@@ -152,8 +152,8 @@ int main()
         ImGui::RadioButton("Uniform", &currMode, UNIFORM);
         ImGui::RadioButton("Perlin Noise", &currMode, PERLIN);
 
-        ImGui::SliderInt("Width", &mapWidth, 2, 100);
-        ImGui::SliderInt("Length", &mapLength, 2, 100);
+        ImGui::SliderInt("Width", &mapWidth, 5, 50);
+        ImGui::SliderInt("Length", &mapLength, 5, 50);
         if (ImGui::Button("Regenerate"))
         {
             switch (currMode)
