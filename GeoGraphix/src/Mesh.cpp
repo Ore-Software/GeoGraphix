@@ -79,14 +79,14 @@ void Mesh::Generate(const HeightMap& heightMap)
             );
 
             // first triangle of the quad (bottom right) (0, 1, 2)
-            glm::vec3 dir1 = vert2 - vert1;
-            glm::vec3 dir2 = vert0 - vert1;
-            triFaceNormals.push_back(-glm::normalize(glm::cross(dir1, dir2)));
+            glm::vec3 dir1 = vert0 - vert1;
+            glm::vec3 dir2 = vert2 - vert1;
+            triFaceNormals.push_back(glm::normalize(glm::cross(dir1, dir2)));
 
             // second triangle of the quad (top left) (2, 3, 0)
-            dir1 = vert0 - vert3;
-            dir2 = vert2 - vert3;
-            triFaceNormals.push_back(-glm::normalize(glm::cross(dir1, dir2)));
+            dir1 = vert2 - vert3;
+            dir2 = vert0 - vert3;
+            triFaceNormals.push_back(glm::normalize(glm::cross(dir1, dir2)));
             rowFaceNormals.push_back(triFaceNormals);
         }
         m_FaceNormals.push_back(rowFaceNormals);
