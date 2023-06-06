@@ -154,6 +154,9 @@ void Mesh::Destroy()
 {
     delete[] m_VertexPos;
     delete[] m_Indices;
+    m_FaceNormals.clear();
+    delete[] m_VertexNormals;
+    delete[] m_Vertices;
 }
 
 void Mesh::Regenerate(const HeightMap& heightMap)

@@ -127,6 +127,12 @@ GLuint Shader::GetID() const
     return m_ID;
 }
 
+void Shader::SetUniform1i(const std::string& name, const int &value) const
+{
+    GLint uniformLocation = GetUniformLocation(name);
+    glUniform1i(uniformLocation, value);
+}
+
 void Shader::SetUniformMat4f(const std::string &name, const glm::mat4 &value) const
 {
     GLint uniformLocation = GetUniformLocation(name);

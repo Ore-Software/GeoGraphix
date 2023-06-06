@@ -17,7 +17,7 @@ public:
 	GLuint GetID() const;
 
 	//Set uniforms
-	
+	void SetUniform1i(const std::string& name, const int& value) const;
 	void SetUniformMat4f(const std::string &name, const glm::mat4 &matrix) const;
 private:
 
