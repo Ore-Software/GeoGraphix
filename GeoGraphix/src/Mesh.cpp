@@ -109,7 +109,7 @@ void Mesh::Generate(const HeightMap& heightMap)
                 if (x == -1 || x == mapWidth - 1) // left edge or right edge of the mesh
                     continue;
                 int y = j + adjFaceIdx[1];
-                if (y == -1 || y == mapWidth - 1) // bottom edge or top edge of the mesh
+                if (y == -1 || y == mapLength - 1) // bottom edge or top edge of the mesh
                     continue;
                 // otherwise, add face normal to crrVertNormal and increment adjFaces for normalization later
                 currVertNormal += m_FaceNormals[y][x][adjFaceIdx[2]];
