@@ -185,6 +185,7 @@ int main()
                     break;
             }
             terrainMesh.Regenerate(terrainHeightMap);
+            terrainVA.Bind(); // need to bind correct VA, otherwise it may add to waterVA
             terrainVB.AssignData(terrainMesh.m_Vertices, 2 * 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
             terrainIB.AssignData(terrainMesh.m_Indices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
         }
