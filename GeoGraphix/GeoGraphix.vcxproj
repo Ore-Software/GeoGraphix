@@ -28,6 +28,7 @@
     <ClCompile Include="src\external\imgui\imgui_tables.cpp" />
     <ClCompile Include="src\external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\HeightMap\HeightMap.cpp" />
+    <ClCompile Include="src\HeightMap\HeightMapDiamondSquare.cpp" />
     <ClCompile Include="src\HeightMap\HeightMapRandom.cpp" />
     <ClCompile Include="src\HeightMap\HeightMapUniform.cpp" />
     <ClCompile Include="src\HeightMap\HeightMapPerlin.cpp" />
@@ -335,6 +336,7 @@
     <ClInclude Include="src\external\imgui\imstb_truetype.h" />
     <ClInclude Include="src\HeightMap.h" />
     <ClInclude Include="src\HeightMapUniform.h" />
+    <ClInclude Include="src\HeightMap\HeightMapDiamondSquare.h" />
     <ClInclude Include="src\HeightMap\HeightMapPerlin.h" />
     <ClInclude Include="src\HeightMap\HeightMap.h" />
     <ClInclude Include="src\HeightMap\HeightMapRandom.h" />

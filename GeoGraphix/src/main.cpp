@@ -17,6 +17,7 @@
 #include "HeightMap/HeightMapUniform.h"
 #include "HeightMap/HeightMapRandom.h"
 #include "HeightMap/HeightMapPerlin.h"
+#include "HeightMap/HeightMapDiamondSquare.h"
 #include "Mesh.h"
 
 int main()
@@ -33,12 +34,15 @@ int main()
     int mapWidth = 25;
     int mapLength = 25;
 
-     enum algoMode
+    enum algoMode
     {
         UNIFORM,
         RANDOM,
-        PERLIN
+        PERLIN,
+        DIAMOND_SQUARE
     };
+
+    HeightMap DStest = HeightMapDiamondSquare(3);
 
     int currMode = RANDOM;
 
