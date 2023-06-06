@@ -5,7 +5,7 @@
 #include "../external/glm/geometric.hpp"
 
 HeightMapPerlin::HeightMapPerlin(int width, int length)
-	: HeightMap(width, length), m_Variability(0.5f), m_MidHeight(0.5f)
+	: HeightMap(width, length), m_Variability(1.0f), m_MidHeight(0.5f)
 {
 	Generate();
 }
