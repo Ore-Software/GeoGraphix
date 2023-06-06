@@ -16,17 +16,18 @@ void Mesh::Generate(const HeightMap& heightMap)
     int mapLength = heightMap.m_Length;
 
     // make the map from -10.0f to 10.0f, regardless of how many sample points are on the map
-    m_VertexPos = new float[3 * mapWidth * mapLength] {}; // 3D location of each point
+    m_VertexPos.resize(mapLength); // 3D location of each point
     for (int j = 0; j < mapLength; j++)
     {
+        m_VertexPos[j].resize(mapWidth);
         for (int i = 0; i < mapWidth; i++)
         {
-            // x value of the (i,j) point
-            m_VertexPos[3 * mapWidth * j + 3 * i + 0] = 20.0f * i / (mapWidth - 1) - 10.0f;
-            // y value of the (i,j) point
-            m_VertexPos[3 * mapWidth * j + 3 * i + 1] = heightMap.m_Map[j * mapWidth + i];
-            // z value of the (i,j) point
-            m_VertexPos[3 * mapWidth * j + 3 * i + 2] = 20.0f * j / (mapLength - 1) - 10.0f;
+            // x,y,z value of the (i,j) point
+            m_VertexPos[j][i] = glm::vec3{ 
+                20.0f * i / (mapWidth - 1) - 10.0f, 
+                heightMap.m_Map[j * mapWidth + i], 
+                20.0f * j / (mapLength - 1) - 10.0f 
+            };
         }
     }
 
@@ -51,32 +52,16 @@ void Mesh::Generate(const HeightMap& heightMap)
     // if there are mapWidth x mapLength points, there will be (mapWidth - 1) x (mapLength - 1) squares, so 2(mapWidth - 1) x 2(mapLength - 1) triangles
     // side note (this can be added to loop above for efficiency, but is isolated for clarity
     m_FaceNormals.resize(mapLength);
-    for (int j = 0; j < mapLength; j++)
+    for (int j = 0; j < mapLength - 1; j++)
     {
         m_FaceNormals[j].resize(mapWidth);
-        for (int i = 0; i < mapWidth; i++)
+        for (int i = 0; i < mapWidth - 1; i++)
         {
             // get square vertices
-            glm::vec3 vert0 = glm::vec3(
-                m_VertexPos[3 * (j * mapWidth + i) + 0], 
-                m_VertexPos[3 * (j * mapWidth + i) + 1], 
-                m_VertexPos[3 * (j * mapWidth + i) + 2]
-            );
-            glm::vec3 vert1 = glm::vec3(
-                m_VertexPos[3 * (j * mapWidth + (i + 1)) + 0], 
-                m_VertexPos[3 * (j * mapWidth + (i + 1)) + 1], 
-                m_VertexPos[3 * (j * mapWidth + (i + 1)) + 2]
-            );
-            glm::vec3 vert2 = glm::vec3(
-                m_VertexPos[3 * ((j + 1) * mapWidth + (i + 1)) + 0],
-                m_VertexPos[3 * ((j + 1) * mapWidth + (i + 1)) + 1],
-                m_VertexPos[3 * ((j + 1) * mapWidth + (i + 1)) + 2]
-            );
-            glm::vec3 vert3 = glm::vec3(
-                m_VertexPos[3 * ((j + 1) * mapWidth + i) + 0],
-                m_VertexPos[3 * ((j + 1) * mapWidth + i) + 1],
-                m_VertexPos[3 * ((j + 1) * mapWidth + i) + 2]
-            );
+            glm::vec3 vert0 = m_VertexPos[j][i];
+            glm::vec3 vert1 = m_VertexPos[j][i + 1];
+            glm::vec3 vert2 = m_VertexPos[j + 1][i + 1];
+            glm::vec3 vert3 = m_VertexPos[j + 1][i];
 
             // first triangle of the quad (bottom right) (0, 1, 2)
             glm::vec3 dir1 = vert0 - vert1;
@@ -93,11 +78,13 @@ void Mesh::Generate(const HeightMap& heightMap)
     }
 
     // same size as m_VertexPos
-    m_VertexNormals = new float[3 * mapWidth * mapLength] {}; // 3D normal of each vertex
+    m_VertexNormals.resize(mapLength); // 3D normal of each vertex
     // consider the 6 potential candidate faces which can touch the current vertex
     std::vector<std::vector<int>> adj = { {0, 0, 0}, {0, 0, 1}, {-1, 0, 0}, {-1, -1, 1}, {-1, -1, 0}, {0, -1, 1} };
     for (int j = 0; j < mapLength; j++)
     {
+        m_VertexNormals[j].resize(mapWidth);
+
         for (int i = 0; i < mapWidth; i++)
         {
             glm::vec3 currVertNormal = glm::vec3( 0, 0, 0 );
@@ -109,7 +96,7 @@ void Mesh::Generate(const HeightMap& heightMap)
                 if (x == -1 || x == mapWidth - 1) // left edge or right edge of the mesh
                     continue;
                 int y = j + adjFaceIdx[1];
-                if (y == -1 || y == mapWidth - 1) // bottom edge or top edge of the mesh
+                if (y == -1 || y == mapLength - 1) // bottom edge or top edge of the mesh
                     continue;
                 // otherwise, add face normal to crrVertNormal and increment adjFaces for normalization later
                 currVertNormal += m_FaceNormals[y][x][adjFaceIdx[2]];
@@ -118,12 +105,8 @@ void Mesh::Generate(const HeightMap& heightMap)
 
             currVertNormal /= adjFaces;
             
-            // x value of the normal
-            m_VertexNormals[3 * mapWidth * j + 3 * i + 0] = currVertNormal.x;
-            // y value of the normal
-            m_VertexNormals[3 * mapWidth * j + 3 * i + 1] = currVertNormal.y;
-            // z value of the normal
-            m_VertexNormals[3 * mapWidth * j + 3 * i + 2] = currVertNormal.z;
+            // x,y,z value of the normal
+            m_VertexNormals[j][i] = currVertNormal;
         }
     }
 
@@ -134,28 +117,28 @@ void Mesh::Generate(const HeightMap& heightMap)
         for (int i = 0; i < mapWidth; i++)
         {
             // x value of the (i,j) point
-            m_Vertices[6 * (mapWidth * j + i) + 0] = m_VertexPos[3 * (mapWidth * j + i) + 0];
+            m_Vertices[6 * (mapWidth * j + i) + 0] = m_VertexPos[j][i].x;
             // y value of the (i,j) point
-            m_Vertices[6 * (mapWidth * j + i) + 1] = m_VertexPos[3 * (mapWidth * j + i) + 1];
+            m_Vertices[6 * (mapWidth * j + i) + 1] = m_VertexPos[j][i].y;
             // z value of the (i,j) point
-            m_Vertices[6 * (mapWidth * j + i) + 2] = m_VertexPos[3 * (mapWidth * j + i) + 2];
+            m_Vertices[6 * (mapWidth * j + i) + 2] = m_VertexPos[j][i].z;
 
             // x value of the normal
-            m_Vertices[6 * (mapWidth * j + i) + 3] = m_VertexNormals[3 * (mapWidth * j + i) + 0];
+            m_Vertices[6 * (mapWidth * j + i) + 3] = m_VertexNormals[j][i].x;
             // y value of the normal
-            m_Vertices[6 * (mapWidth * j + i) + 4] = m_VertexNormals[3 * (mapWidth * j + i) + 1];
+            m_Vertices[6 * (mapWidth * j + i) + 4] = m_VertexNormals[j][i].y;
             // z value of the normal
-            m_Vertices[6 * (mapWidth * j + i) + 5] = m_VertexNormals[3 * (mapWidth * j + i) + 2];
+            m_Vertices[6 * (mapWidth * j + i) + 5] = m_VertexNormals[j][i].z;
         }
     }
 }
 
 void Mesh::Destroy()
 {
-    delete[] m_VertexPos;
+    m_VertexPos.clear();
     delete[] m_Indices;
     m_FaceNormals.clear();
-    delete[] m_VertexNormals;
+    m_VertexNormals.clear();
     delete[] m_Vertices;
 }
 

@@ -14,9 +14,9 @@ public:
 	void Destroy();
 	void Regenerate(const HeightMap& heightMap);
 
-	float* m_VertexPos;
+	std::vector<std::vector<glm::vec3>> m_VertexPos;
 	unsigned int* m_Indices;
 	std::vector<std::vector<std::vector<glm::vec3>>> m_FaceNormals;
-	float* m_VertexNormals;
+	std::vector<std::vector<glm::vec3>> m_VertexNormals;
 	float* m_Vertices;
 };
