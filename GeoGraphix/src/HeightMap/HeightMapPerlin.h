@@ -12,10 +12,13 @@ class HeightMapPerlin : public HeightMap
 {
 public:
 	HeightMapPerlin(int width, int length);
+	HeightMapPerlin(int width, int length, float var, float mid);
 
 	void Generate() override;
 
 private:
+	float m_Variability, m_MidHeight;
+
 	float mix(float x, float y, float a);
 
 	float smooth_step(float f);

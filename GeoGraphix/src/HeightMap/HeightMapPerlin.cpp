@@ -5,7 +5,13 @@
 #include "../external/glm/geometric.hpp"
 
 HeightMapPerlin::HeightMapPerlin(int width, int length)
-	: HeightMap(width, length)
+	: HeightMap(width, length), m_Variability(0.5f), m_MidHeight(0.5f)
+{
+	Generate();
+}
+
+HeightMapPerlin::HeightMapPerlin(int width, int length,float var, float mid)
+	: HeightMap(width, length), m_Variability(var), m_MidHeight(mid)
 {
 	Generate();
 }
@@ -87,7 +93,7 @@ void HeightMapPerlin::Generate()
 		{
 			int index = i * m_Width + j;
 			float height = noise(glm::vec3(j, i, 0.5));
-			m_Map[index] = height * 0.5f + 0.5f;
+			m_Map[index] = height * m_Variability + m_MidHeight;
 		}
 	}
 }

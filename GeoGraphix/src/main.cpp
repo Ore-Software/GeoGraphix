@@ -42,19 +42,19 @@ int main()
 
     int currMode = RANDOM;
 
-    HeightMap map = HeightMapRandom(mapWidth, mapLength);
+    HeightMap terrainHeightMap = HeightMapRandom(mapWidth, mapLength);
 
-    Mesh mesh(map);
+    Mesh terrainMesh(terrainHeightMap);
 
-    VertexArray VA;
-    VertexBuffer VB(mesh.m_Vertices, 2 * 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
+    VertexArray terrainVA;
+    VertexBuffer terrainVB(terrainMesh.m_Vertices, 2 * 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
     // bind vertex buffer to vertex array
-    VA.AddBuffer(VB, layout);
-    IndexBuffer IB(mesh.m_Indices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
+    terrainVA.AddBuffer(terrainVB, layout);
+    IndexBuffer terrainIB(terrainMesh.m_Indices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
 
     // shaders
-    std::string vertexFilepath = "res/shaders/vertex.shader";
-    std::string fragmentFilepath = "res/shaders/fragment.shader";
+    std::string vertexFilepath = "res/shaders/terrain.vert";
+    std::string fragmentFilepath = "res/shaders/terrain.frag";
 
     Shader shader(vertexFilepath, fragmentFilepath);
     
@@ -81,6 +81,15 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     bool wireframe = false;
+
+    // display water
+    bool water = false;
+    HeightMap waterHeightMap = HeightMapPerlin(100, 100, 0.1f, 0.2f);
+    Mesh waterMesh(waterHeightMap);
+    VertexArray waterVA;
+    VertexBuffer waterVB(waterMesh.m_Vertices, 2 * 3 * 100 * 100 * sizeof(float), DRAW_MODE::STATIC);
+    waterVA.AddBuffer(waterVB, layout);
+    IndexBuffer waterIB(waterMesh.m_Indices, 6 * 99 * 99, DRAW_MODE::STATIC);
 
     GLFWwindow* windowID = window.GetID();
 
@@ -136,9 +145,16 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         /* Render here */
-        VA.Bind();
+        terrainVA.Bind();
         shader.Bind();
-        glDrawElements(GL_TRIANGLES, IB.GetCount(), GL_UNSIGNED_INT, 0);
+        shader.SetUniform1i("u_Is_Water", 0);
+        glDrawElements(GL_TRIANGLES, terrainIB.GetCount(), GL_UNSIGNED_INT, 0);
+        if (water) // render water
+        {
+            waterVA.Bind();
+            shader.SetUniform1i("u_Is_Water", 1);
+            glDrawElements(GL_TRIANGLES, waterIB.GetCount(), GL_UNSIGNED_INT, 0);
+        }
 
         // imgui new frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -159,18 +175,18 @@ int main()
             switch (currMode)
             {
                 case UNIFORM:
-                    map = HeightMapUniform(mapWidth, mapLength, 0.5f);
+                    terrainHeightMap = HeightMapUniform(mapWidth, mapLength, 0.5f);
                     break;
                 case RANDOM:
-                    map = HeightMapRandom(mapWidth, mapLength);
+                    terrainHeightMap = HeightMapRandom(mapWidth, mapLength);
                     break;
                 case PERLIN:
-                    map = HeightMapPerlin(mapWidth, mapLength);
+                    terrainHeightMap = HeightMapPerlin(mapWidth, mapLength);
                     break;
             }
-            mesh.Regenerate(map);
-            VB.AssignData(mesh.m_Vertices, 2 * 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
-            IB.AssignData(mesh.m_Indices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
+            terrainMesh.Regenerate(terrainHeightMap);
+            terrainVB.AssignData(terrainMesh.m_Vertices, 2 * 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
+            terrainIB.AssignData(terrainMesh.m_Indices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
         }
 
         ImGui::Text("Options:");
@@ -181,6 +197,7 @@ int main()
             else
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // surface mode
         }
+        ImGui::Checkbox("Water", &water); // display water
 
         ImGui::End();
 
