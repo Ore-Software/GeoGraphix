@@ -50,12 +50,12 @@ void Mesh::Generate(const HeightMap& heightMap)
 
     // if there are mapWidth x mapLength points, there will be (mapWidth - 1) x (mapLength - 1) squares, so 2(mapWidth - 1) x 2(mapLength - 1) triangles
     // side note (this can be added to loop above for efficiency, but is isolated for clarity
-    for (int j = 0; j < mapLength - 1; j++)
+    m_FaceNormals.resize(mapLength);
+    for (int j = 0; j < mapLength; j++)
     {
-        std::vector<std::vector<glm::vec3>> rowFaceNormals;
-        for (int i = 0; i < mapWidth - 1; i++)
+        m_FaceNormals[j].resize(mapWidth);
+        for (int i = 0; i < mapWidth; i++)
         {
-            std::vector<glm::vec3> triFaceNormals;
             // get square vertices
             glm::vec3 vert0 = glm::vec3(
                 m_VertexPos[3 * (j * mapWidth + i) + 0], 
@@ -81,15 +81,15 @@ void Mesh::Generate(const HeightMap& heightMap)
             // first triangle of the quad (bottom right) (0, 1, 2)
             glm::vec3 dir1 = vert0 - vert1;
             glm::vec3 dir2 = vert2 - vert1;
-            triFaceNormals.push_back(glm::normalize(glm::cross(dir1, dir2)));
+            
+            m_FaceNormals[j][i].push_back(glm::normalize(glm::cross(dir1, dir2)));
 
             // second triangle of the quad (top left) (2, 3, 0)
             dir1 = vert2 - vert3;
             dir2 = vert0 - vert3;
-            triFaceNormals.push_back(glm::normalize(glm::cross(dir1, dir2)));
-            rowFaceNormals.push_back(triFaceNormals);
+            
+            m_FaceNormals[j][i].push_back(glm::normalize(glm::cross(dir1, dir2)));
         }
-        m_FaceNormals.push_back(rowFaceNormals);
     }
 
     // same size as m_VertexPos
