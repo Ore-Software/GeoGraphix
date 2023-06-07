@@ -42,7 +42,7 @@ int main()
         DIAMOND_SQUARE
     };
 
-    HeightMap DStest = HeightMapDiamondSquare(3);
+    HeightMapDiamondSquare DStest = HeightMapDiamondSquare(8);
 
     int currMode = RANDOM;
 

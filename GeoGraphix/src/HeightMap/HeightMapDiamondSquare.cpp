@@ -1,112 +1,97 @@
 #include "HeightMapDiamondSquare.h"
 
 HeightMapDiamondSquare::HeightMapDiamondSquare(int n)
-	: m_StartingN(n), m_DSLength((int)pow(2, n) + 1), HeightMap(m_DSLength, m_DSLength), m_MaxInv((float)1/(float)RAND_MAX)
+	: m_N(n), HeightMap((int)pow(2, n) + 1, (int)pow(2, n) + 1), m_MaxInv((float)1/(float)RAND_MAX)
 {
 	Generate();
 }
 
 void HeightMapDiamondSquare::Generate()
 {
-	m_NoiseValues.resize(m_DSLength);
-	for (int j = 0; j < m_DSLength; j++)
+	int DSlength = (int)pow(2, m_N) + 1; // length/width for diamond square map
+
+	m_HeightValues.resize(DSlength);
+	for (int j = 0; j < DSlength; j++)
 	{
-		m_NoiseValues[j].resize(m_DSLength);
+		m_HeightValues[j].resize(DSlength);
 	}
 
 	// Assign four corner values
-	m_NoiseValues[0][0] = (float)std::rand() * m_MaxInv;
-	m_NoiseValues[0][m_DSLength - 1] = (float)std::rand() * m_MaxInv;
-	m_NoiseValues[m_DSLength - 1][m_DSLength - 1] = (float)std::rand() * m_MaxInv;
-	m_NoiseValues[m_DSLength - 1][0] = (float)std::rand() * m_MaxInv;
+	m_HeightValues[0][0] = (float)std::rand() * m_MaxInv;
+	m_HeightValues[0][DSlength - 1] = (float)std::rand() * m_MaxInv;
+	m_HeightValues[DSlength - 1][DSlength - 1] = (float)std::rand() * m_MaxInv;
+	m_HeightValues[DSlength - 1][0] = (float)std::rand() * m_MaxInv;
 
-	DiamondSquare(m_StartingN, 0, m_DSLength - 1, 0, m_DSLength - 1);
-
+	int offset = (DSlength - 1) / 2;
+	DiamondSquare(offset, offset, offset);
 }
 
-void HeightMapDiamondSquare::DiamondSquare(int n, int x0, int x1, int y0, int y1)
+void HeightMapDiamondSquare::DiamondSquare(int offset, int centerX, int centerY)
 {
-	int offset = pow(2, n - 1);
+	DiamondStep(offset, centerX, centerY);
+	SquareStep(offset, centerX, centerY);
 
-	DiamondStep(n, x0, x1, y0, y1);
-	SquareStep(n, x0, x1, y0, y1);
+	if ((offset /= 2) < 1) return;
 
-	// Recurse
-	if (n == 1)
-		return;
-	DiamondSquare(n - 1, x0, x0 + offset, y0, y0 + offset); // Bottom-left
-	DiamondSquare(n - 1, x0 + offset, x1, y0, y0 + offset); // Bottom-right
-	DiamondSquare(n - 1, x0, x0 + offset, y0 + offset, y1); // Top-left
-	DiamondSquare(n - 1, x0 + offset, x1, y0 + offset, y1); // Top-right
+	DiamondSquare(offset, centerX - offset, centerY - offset); // Bottom-left subsquare
+	DiamondSquare(offset, centerX + offset, centerY - offset); // Bottom-right subsquare
+	DiamondSquare(offset, centerX - offset, centerY + offset); // Top-left subsquare
+	DiamondSquare(offset, centerX + offset, centerY + offset); // Top-right subsquare
 }
 
-void HeightMapDiamondSquare::DiamondStep(int n, int x0, int x1, int y0, int y1)
+void HeightMapDiamondSquare::DiamondStep(int offset, int centerX, int centerY)
 {
-	// Calculate center point for diamond step
-	m_NoiseValues[(y1 + y0) / 2][(x1 + x0) / 2] = (m_NoiseValues[y0][x0] + m_NoiseValues[y0][x1] + m_NoiseValues[y1][x1] + m_NoiseValues[y1][x0] + std::rand() * m_MaxInv) / 5;
+	m_HeightValues[centerY][centerX] = (m_HeightValues[centerY - offset][centerX - offset]	// bottom-left
+		+ m_HeightValues[centerY - offset][centerX + offset]								// bottom-right
+		+ m_HeightValues[centerY + offset][centerX - offset]								// top-left
+		+ m_HeightValues[centerY + offset][centerX + offset]								// top-right
+		+ std::rand() * m_MaxInv
+	) / 5;
 }
 
-void HeightMapDiamondSquare::SquareStep(int n, int x0, int x1, int y0, int y1)
+void HeightMapDiamondSquare::SquareStep(int offset, int centerX, int centerY)
 {
+	CalcSquareValues(offset, centerX, centerY - offset); // Bottom
+	CalcSquareValues(offset, centerX, centerY + offset); // Top
+	CalcSquareValues(offset, centerX - offset, centerY); // Left
+	CalcSquareValues(offset, centerX + offset, centerY); // Right
+}
 
-	// Calculate points for square step
-	int offset = pow(2, n - 1);
-	int horizMidpoint = x0 + offset;
-	int vertMidpoint = y0 + offset;
+void HeightMapDiamondSquare::CalcSquareValues(int offset, int centerX, int centerY)
+{
+	int DSLength = pow(2, m_N);
+
+	// Random value
+	int divisor = 1;
+	m_HeightValues[centerY][centerX] += std::rand() * m_MaxInv;
 
 	// Bottom
-	int avgDivisor = 4;
-	m_NoiseValues[y0][horizMidpoint] += m_NoiseValues[vertMidpoint][horizMidpoint];
-	m_NoiseValues[y0][horizMidpoint] += m_NoiseValues[y0][x0];
-	m_NoiseValues[y0][horizMidpoint] += m_NoiseValues[y0][x1];
-	m_NoiseValues[y0][horizMidpoint] += std::rand() * m_MaxInv;
-
-	if (y0 != 0)
+	if (centerY != 0)
 	{
-		m_NoiseValues[y0][horizMidpoint] += m_NoiseValues[y0 - offset][horizMidpoint];
-		avgDivisor++;
+		m_HeightValues[centerY][centerX] += m_HeightValues[centerY - offset][centerX];
+		divisor++;
 	}
-	m_NoiseValues[y0][horizMidpoint] /= avgDivisor;
-	
+
 	// Top
-	avgDivisor = 4;
-	m_NoiseValues[y1][horizMidpoint] += m_NoiseValues[vertMidpoint][horizMidpoint];
-	m_NoiseValues[y1][horizMidpoint] += m_NoiseValues[y1][x0];
-	m_NoiseValues[y1][horizMidpoint] += m_NoiseValues[y1][x1];
-	m_NoiseValues[y1][horizMidpoint] += std::rand() * m_MaxInv;
-
-	if (y1 != pow(2, m_StartingN))
+	if (centerY != DSLength)
 	{
-		m_NoiseValues[y1][horizMidpoint] += m_NoiseValues[y1 + offset][horizMidpoint];
-			avgDivisor++;
+		m_HeightValues[centerY][centerX] += m_HeightValues[centerY + offset][centerX];
+		divisor++;
 	}
-	m_NoiseValues[y1][horizMidpoint] /= avgDivisor;
 
 	// Left
-	avgDivisor = 4;
-	m_NoiseValues[vertMidpoint][x0] += m_NoiseValues[vertMidpoint][horizMidpoint];
-	m_NoiseValues[vertMidpoint][x0] += m_NoiseValues[y0][x0];
-	m_NoiseValues[vertMidpoint][x0] += m_NoiseValues[y1][x0];
-	m_NoiseValues[vertMidpoint][x0] += std::rand() * m_MaxInv;
-
-	if (x0 != 0)
+	if (centerX != 0)
 	{
-		m_NoiseValues[vertMidpoint][x0] += m_NoiseValues[vertMidpoint][x0 - offset];
-		avgDivisor++;
+		m_HeightValues[centerY][centerX] += m_HeightValues[centerY][centerX - offset];
+		divisor++;
 	}
-	m_NoiseValues[vertMidpoint][x0] /= avgDivisor;
 
 	// Right
-	avgDivisor = 4;
-	m_NoiseValues[vertMidpoint][x1] += m_NoiseValues[vertMidpoint][horizMidpoint];
-	m_NoiseValues[vertMidpoint][x1] += m_NoiseValues[y0][x1];
-	m_NoiseValues[vertMidpoint][x1] += m_NoiseValues[y1][x1];
-	m_NoiseValues[vertMidpoint][x1] += std::rand() * m_MaxInv;
-
-	if (x0 != pow(2, m_StartingN))
+	if (centerX != DSLength)
 	{
-		m_NoiseValues[vertMidpoint][x1] += m_NoiseValues[vertMidpoint][x0 + offset];
-		avgDivisor++;
+		m_HeightValues[centerY][centerX] += m_HeightValues[centerY][centerX + offset];
+		divisor++;
 	}
-	m_NoiseValues[vertMidpoint][x1] /= avgDivisor;
+
+	m_HeightValues[centerY][centerX] /= divisor;
 }
