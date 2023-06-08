@@ -17,6 +17,7 @@
 #include "HeightMap/HeightMapUniform.h"
 #include "HeightMap/HeightMapRandom.h"
 #include "HeightMap/HeightMapPerlin.h"
+#include "HeightMap/HeightMapDiamondSquare.h"
 #include "Mesh.h"
 
 int main()
@@ -33,11 +34,12 @@ int main()
     int mapWidth = 25;
     int mapLength = 25;
 
-     enum algoMode
+    enum algoMode
     {
         UNIFORM,
         RANDOM,
-        PERLIN
+        PERLIN,
+        DIAMOND_SQUARE
     };
 
     int currMode = RANDOM;
@@ -167,6 +169,7 @@ int main()
         ImGui::RadioButton("Random", &currMode, RANDOM);
         ImGui::RadioButton("Uniform", &currMode, UNIFORM);
         ImGui::RadioButton("Perlin Noise", &currMode, PERLIN);
+        ImGui::RadioButton("Diamond Square", &currMode, DIAMOND_SQUARE);
 
         ImGui::SliderInt("Width", &mapWidth, 5, 50);
         ImGui::SliderInt("Length", &mapLength, 5, 50);
@@ -182,6 +185,9 @@ int main()
                     break;
                 case PERLIN:
                     terrainHeightMap = HeightMapPerlin(mapWidth, mapLength);
+                    break;
+                case DIAMOND_SQUARE:
+                    terrainHeightMap = HeightMapDiamondSquare(mapWidth, mapLength);
                     break;
             }
             terrainMesh.Regenerate(terrainHeightMap);
