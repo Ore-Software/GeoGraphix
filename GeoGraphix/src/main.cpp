@@ -42,8 +42,6 @@ int main()
         DIAMOND_SQUARE
     };
 
-    HeightMapDiamondSquare DStest = HeightMapDiamondSquare(20, 55);
-
     int currMode = RANDOM;
 
     HeightMap terrainHeightMap = HeightMapRandom(mapWidth, mapLength);
@@ -187,6 +185,7 @@ int main()
                     break;
                 case PERLIN:
                     terrainHeightMap = HeightMapPerlin(mapWidth, mapLength);
+                    break;
                 case DIAMOND_SQUARE:
                     terrainHeightMap = HeightMapDiamondSquare(mapWidth, mapLength);
                     break;
