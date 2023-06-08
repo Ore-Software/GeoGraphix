@@ -26,6 +26,14 @@ void HeightMapDiamondSquare::Generate()
 
 	int offset = (DSlength - 1) / 2;
 	DiamondSquare(offset, offset, offset);
+
+	for (int j = 0; j < m_Length; j++)
+	{
+		for (int i = 0; i < m_Width; i++)
+		{
+			m_Map[j * m_Width + i] = m_HeightValues[j][i];
+		}
+	}
 }
 
 void HeightMapDiamondSquare::DiamondSquare(int offset, int centerX, int centerY)
