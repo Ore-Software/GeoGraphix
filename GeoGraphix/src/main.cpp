@@ -42,7 +42,7 @@ int main()
         DIAMOND_SQUARE
     };
 
-    HeightMapDiamondSquare DStest = HeightMapDiamondSquare(8);
+    HeightMapDiamondSquare DStest = HeightMapDiamondSquare(20, 55);
 
     int currMode = RANDOM;
 
@@ -171,6 +171,7 @@ int main()
         ImGui::RadioButton("Random", &currMode, RANDOM);
         ImGui::RadioButton("Uniform", &currMode, UNIFORM);
         ImGui::RadioButton("Perlin Noise", &currMode, PERLIN);
+        ImGui::RadioButton("Diamond Square", &currMode, DIAMOND_SQUARE);
 
         ImGui::SliderInt("Width", &mapWidth, 5, 50);
         ImGui::SliderInt("Length", &mapLength, 5, 50);
@@ -186,6 +187,8 @@ int main()
                     break;
                 case PERLIN:
                     terrainHeightMap = HeightMapPerlin(mapWidth, mapLength);
+                case DIAMOND_SQUARE:
+                    terrainHeightMap = HeightMapDiamondSquare(mapWidth, mapLength);
                     break;
             }
             terrainMesh.Regenerate(terrainHeightMap);

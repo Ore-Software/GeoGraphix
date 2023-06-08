@@ -4,7 +4,7 @@
 class HeightMapDiamondSquare : public HeightMap
 {
 public:
-	HeightMapDiamondSquare(int n);
+	HeightMapDiamondSquare(int width, int length);
 
 	void Generate() override;
 private:

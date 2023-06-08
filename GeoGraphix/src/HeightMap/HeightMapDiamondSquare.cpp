@@ -1,8 +1,10 @@
 #include "HeightMapDiamondSquare.h"
 
-HeightMapDiamondSquare::HeightMapDiamondSquare(int n)
-	: m_N(n), HeightMap((int)pow(2, n) + 1, (int)pow(2, n) + 1), m_MaxInv((float)1/(float)RAND_MAX)
+HeightMapDiamondSquare::HeightMapDiamondSquare(int width, int length)
+	: HeightMap(width, length), m_MaxInv((float)1/(float)RAND_MAX)
 {
+	int largestDimension = std::max(width, length);
+	m_N = log2(largestDimension) + 1;
 	Generate();
 }
 
