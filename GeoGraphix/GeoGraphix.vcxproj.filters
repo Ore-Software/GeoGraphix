@@ -81,6 +81,9 @@
     <ClCompile Include="src\HeightMap\HeightMapDiamondSquare.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\HeightMap\HeightMapSimplex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\external\glm\detail\_features.hpp">
@@ -1002,6 +1005,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\HeightMap\HeightMapDiamondSquare.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HeightMap\HeightMapSimplex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

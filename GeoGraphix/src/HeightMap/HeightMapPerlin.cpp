@@ -92,8 +92,8 @@ void HeightMapPerlin::Generate()
 		for (int j = 0; j < m_Width; j++)
 		{
 			int index = i * m_Width + j;
-			float height = noise(glm::vec3(j, i, 0.5));
-			m_Map[index] = height * m_Variability + m_MidHeight;
+			float height = noise(glm::vec3(j, i, 0.5)) * m_Variability + m_MidHeight;
+			m_Map[index] = height;
 		}
 	}
 }

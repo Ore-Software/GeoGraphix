@@ -30,6 +30,7 @@
     <ClCompile Include="src\HeightMap\HeightMap.cpp" />
     <ClCompile Include="src\HeightMap\HeightMapDiamondSquare.cpp" />
     <ClCompile Include="src\HeightMap\HeightMapRandom.cpp" />
+    <ClCompile Include="src\HeightMap\HeightMapSimplex.cpp" />
     <ClCompile Include="src\HeightMap\HeightMapUniform.cpp" />
     <ClCompile Include="src\HeightMap\HeightMapPerlin.cpp" />
     <ClCompile Include="src\Input.cpp" />
@@ -340,6 +341,7 @@
     <ClInclude Include="src\HeightMap\HeightMapPerlin.h" />
     <ClInclude Include="src\HeightMap\HeightMap.h" />
     <ClInclude Include="src\HeightMap\HeightMapRandom.h" />
+    <ClInclude Include="src\HeightMap\HeightMapSimplex.h" />
     <ClInclude Include="src\HeightMap\HeightMapUniform.h" />
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\Mesh.h" />

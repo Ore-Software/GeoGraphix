@@ -18,9 +18,10 @@
 #include "HeightMap/HeightMapRandom.h"
 #include "HeightMap/HeightMapPerlin.h"
 #include "HeightMap/HeightMapDiamondSquare.h"
+#include "HeightMap/HeightMapSimplex.h"
 #include "Mesh.h"
 
-int main()
+    int main()
 {
     float screenWidth = 1280.0f;
     float screenHeight = 720.0f;
@@ -39,7 +40,8 @@ int main()
         UNIFORM,
         RANDOM,
         PERLIN,
-        DIAMOND_SQUARE
+        DIAMOND_SQUARE,
+        SIMPLEX
     };
 
     int currMode = RANDOM;
@@ -59,7 +61,7 @@ int main()
     std::string fragmentFilepath = "res/shaders/terrain.frag";
 
     Shader shader(vertexFilepath, fragmentFilepath);
-    
+
     // camera setup
     double yaw = -90.0;
     double pitch = -45.0;
@@ -170,25 +172,29 @@ int main()
         ImGui::RadioButton("Uniform", &currMode, UNIFORM);
         ImGui::RadioButton("Perlin Noise", &currMode, PERLIN);
         ImGui::RadioButton("Diamond Square", &currMode, DIAMOND_SQUARE);
+        ImGui::RadioButton("Simplex Noise", &currMode, SIMPLEX);
 
-        ImGui::SliderInt("Width", &mapWidth, 5, 50);
+            ImGui::SliderInt("Width", &mapWidth, 5, 50);
         ImGui::SliderInt("Length", &mapLength, 5, 50);
         if (ImGui::Button("Regenerate"))
         {
             switch (currMode)
             {
-                case UNIFORM:
-                    terrainHeightMap = HeightMapUniform(mapWidth, mapLength, 0.5f);
-                    break;
-                case RANDOM:
-                    terrainHeightMap = HeightMapRandom(mapWidth, mapLength);
-                    break;
-                case PERLIN:
-                    terrainHeightMap = HeightMapPerlin(mapWidth, mapLength);
-                    break;
-                case DIAMOND_SQUARE:
-                    terrainHeightMap = HeightMapDiamondSquare(mapWidth, mapLength);
-                    break;
+            case UNIFORM:
+                terrainHeightMap = HeightMapUniform(mapWidth, mapLength, 0.5f);
+                break;
+            case RANDOM:
+                terrainHeightMap = HeightMapRandom(mapWidth, mapLength);
+                break;
+            case PERLIN:
+                terrainHeightMap = HeightMapPerlin(mapWidth, mapLength);
+                break;
+            case DIAMOND_SQUARE:
+                terrainHeightMap = HeightMapDiamondSquare(mapWidth, mapLength);
+                break;
+            case SIMPLEX:
+                terrainHeightMap = HeightMapSimplex(mapWidth, mapLength);
+                break;
             }
             terrainMesh.Regenerate(terrainHeightMap);
             terrainVA.Bind(); // need to bind correct VA, otherwise it may add to waterVA
