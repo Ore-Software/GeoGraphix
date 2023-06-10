@@ -84,6 +84,7 @@
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // wirefrmae mode
     bool wireframe = false;
 
     // display water
@@ -94,6 +95,9 @@
     VertexBuffer waterVB(waterMesh.m_Vertices, 2 * 3 * 100 * 100 * sizeof(float), DRAW_MODE::STATIC);
     waterVA.AddBuffer(waterVB, layout);
     IndexBuffer waterIB(waterMesh.m_Indices, 6 * 99 * 99, DRAW_MODE::STATIC);
+
+    // auto rotate
+    bool rot = false;
 
     GLFWwindow* windowID = window.GetID();
 
@@ -139,6 +143,11 @@
         {
             rotationAngle = deltaX * sens;
             rotationAngle > 360.0f ? rotationAngle -= 360.0f : NULL;
+            modelMatrix = glm::rotate(modelMatrix, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+        }
+        else if (rot)
+        {
+            rotationAngle = 0.05;
             modelMatrix = glm::rotate(modelMatrix, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
         }
 
@@ -211,6 +220,7 @@
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // surface mode
         }
         ImGui::Checkbox("Water", &water); // display water
+        ImGui::Checkbox("Auto Rotate", &rot); // toggle auto rotate
 
         ImGui::End();
 
