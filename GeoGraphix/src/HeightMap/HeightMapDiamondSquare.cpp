@@ -14,15 +14,13 @@ void HeightMapDiamondSquare::Generate()
 
 	m_HeightValues.resize(DSlength);
 	for (int j = 0; j < DSlength; j++)
-	{
 		m_HeightValues[j].resize(DSlength);
-	}
 
 	// Assign four corner values
-	m_HeightValues[0][0] = (float)std::rand() * m_MaxInv;
-	m_HeightValues[0][DSlength - 1] = (float)std::rand() * m_MaxInv;
+	m_HeightValues[0           ][0           ] = (float)std::rand() * m_MaxInv;
+	m_HeightValues[0           ][DSlength - 1] = (float)std::rand() * m_MaxInv;
 	m_HeightValues[DSlength - 1][DSlength - 1] = (float)std::rand() * m_MaxInv;
-	m_HeightValues[DSlength - 1][0] = (float)std::rand() * m_MaxInv;
+	m_HeightValues[DSlength - 1][0           ] = (float)std::rand() * m_MaxInv;
 
 	int offset = (DSlength - 1) / 2;
 	DiamondSquare(offset, offset, offset);
@@ -41,7 +39,8 @@ void HeightMapDiamondSquare::DiamondSquare(int offset, int centerX, int centerY)
 	DiamondStep(offset, centerX, centerY);
 	SquareStep(offset, centerX, centerY);
 
-	if ((offset /= 2) < 1) return;
+	if ((offset /= 2) < 1) 
+		return;
 
 	DiamondSquare(offset, centerX - offset, centerY - offset); // Bottom-left subsquare
 	DiamondSquare(offset, centerX + offset, centerY - offset); // Bottom-right subsquare
@@ -51,29 +50,30 @@ void HeightMapDiamondSquare::DiamondSquare(int offset, int centerX, int centerY)
 
 void HeightMapDiamondSquare::DiamondStep(int offset, int centerX, int centerY)
 {
-	m_HeightValues[centerY][centerX] = (m_HeightValues[centerY - offset][centerX - offset]	// bottom-left
-		+ m_HeightValues[centerY - offset][centerX + offset]								// bottom-right
-		+ m_HeightValues[centerY + offset][centerX - offset]								// top-left
-		+ m_HeightValues[centerY + offset][centerX + offset]								// top-right
-		+ std::rand() * m_MaxInv
-	) / 5;
+	m_HeightValues[centerY][centerX] = 
+	(
+		m_HeightValues[centerY - offset][centerX - offset]	// bottom-left
+	  + m_HeightValues[centerY - offset][centerX + offset]	// bottom-right
+	  + m_HeightValues[centerY + offset][centerX - offset]	// top-left
+	  + m_HeightValues[centerY + offset][centerX + offset]	// top-right
+	) / 4;
+
+	m_HeightValues[centerY][centerX] += std::rand() * m_MaxInv;
+	m_HeightValues[centerY][centerX] /= 2;
 }
 
 void HeightMapDiamondSquare::SquareStep(int offset, int centerX, int centerY)
 {
-	CalcSquareValues(offset, centerX, centerY - offset); // Bottom
-	CalcSquareValues(offset, centerX, centerY + offset); // Top
-	CalcSquareValues(offset, centerX - offset, centerY); // Left
-	CalcSquareValues(offset, centerX + offset, centerY); // Right
+	CalcSquareValues(offset, centerX         , centerY - offset); // Bottom
+	CalcSquareValues(offset, centerX         , centerY + offset); // Top
+	CalcSquareValues(offset, centerX - offset, centerY         ); // Left
+	CalcSquareValues(offset, centerX + offset, centerY         ); // Right
 }
 
 void HeightMapDiamondSquare::CalcSquareValues(int offset, int centerX, int centerY)
 {
 	int DSLength = pow(2, m_N);
-
-	// Random value
-	int divisor = 1;
-	m_HeightValues[centerY][centerX] += std::rand() * m_MaxInv;
+	int divisor = 0;
 
 	// Bottom
 	if (centerY != 0)
@@ -104,4 +104,8 @@ void HeightMapDiamondSquare::CalcSquareValues(int offset, int centerX, int cente
 	}
 
 	m_HeightValues[centerY][centerX] /= divisor;
+
+	// Random value
+	m_HeightValues[centerY][centerX] += std::rand() * m_MaxInv;
+	m_HeightValues[centerY][centerX] /= 2;
 }
