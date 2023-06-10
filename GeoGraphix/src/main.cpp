@@ -23,9 +23,9 @@
 
     int main()
 {
-    float screenWidth = 1280.0f;
-    float screenHeight = 720.0f;
-    float aspectRatio = screenWidth / screenHeight;
+    unsigned int screenWidth = 1280;
+    unsigned int screenHeight = 720;
+    float aspectRatio = (float) screenWidth / screenHeight;
     Window window(screenWidth, screenHeight, "GeoGraphix", NULL);
 
     VertexBufferLayout layout;
@@ -141,13 +141,13 @@
         // rotate model according to mouse movement
         if (input.IsMouseButtonDown(GLFW_MOUSE_BUTTON_1) && !ImGui::GetIO().WantCaptureMouse)
         {
-            rotationAngle = deltaX * sens;
+            rotationAngle = (float) deltaX * sens;
             rotationAngle > 360.0f ? rotationAngle -= 360.0f : NULL;
             modelMatrix = glm::rotate(modelMatrix, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
         }
         else if (rot)
         {
-            rotationAngle = 0.05;
+            rotationAngle = 0.05f;
             modelMatrix = glm::rotate(modelMatrix, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
         }
 
