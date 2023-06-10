@@ -63,6 +63,7 @@
     Shader shader(vertexFilepath, fragmentFilepath);
 
     // camera setup
+    float FOV = 45.0f;
     double yaw = -90.0;
     double pitch = -45.0;
     glm::vec3 cameraPosition = { 0.0f, 20.0f, 25.0f };
@@ -71,7 +72,7 @@
     float rotationAngle = 45.0f; // rotation angle of the terrain mesh
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::rotate(modelMatrix, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
+    glm::mat4 projMatrix = glm::perspective(glm::radians(FOV), aspectRatio, 0.1f, 1000.0f);
 
     // upload uniforms
     shader.Bind();
@@ -102,8 +103,7 @@
     GLFWwindow* windowID = window.GetID();
 
     // input initialization
-    Input input;
-    input.m_WindowID = windowID;
+    Input::Init(windowID);
 
     // keyboard movement variables
     double currentTime = 0.0;
@@ -139,7 +139,7 @@
         lastYpos = currYpos;
 
         // rotate model according to mouse movement
-        if (input.IsMouseButtonDown(GLFW_MOUSE_BUTTON_1) && !ImGui::GetIO().WantCaptureMouse)
+        if (Input::IsMouseButtonDown(GLFW_MOUSE_BUTTON_1) && !ImGui::GetIO().WantCaptureMouse)
         {
             rotationAngle = (float) deltaX * sens;
             rotationAngle > 360.0f ? rotationAngle -= 360.0f : NULL;
@@ -150,8 +150,15 @@
             rotationAngle = 0.05f;
             modelMatrix = glm::rotate(modelMatrix, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
         }
-
         shader.SetUniformMat4f("u_Model", modelMatrix);
+        
+        // adjust FOV using vertical scroll
+        FOV -= Input::GetScrollY() * 2.0f;
+        FOV < 25.0f ? FOV = 25.0f : NULL;
+        FOV > 65.0f ? FOV = 65.0f : NULL;
+        projMatrix = glm::perspective(glm::radians(FOV), aspectRatio, 0.1f, 1000.0f);
+        shader.SetUniformMat4f("u_Projection", projMatrix);
+        Input::ResetScroll();
 
         // clearing per frame
         glClearColor(0.80f, 0.90f, 0.96f, 1.00f);
