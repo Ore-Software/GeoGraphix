@@ -45,21 +45,24 @@
         SIMPLEX
     };
 
-    int currMode = RANDOM;
+    int octave1Mode = PERLIN;
+    int octave2Mode = RANDOM;
+    int octave3Mode = RANDOM;
+
+    bool octave2Active = true;
+    bool octave3Active = true;
 
     /*HeightMap terrainHeightMap = HeightMapRandom(mapWidth, mapLength);*/
     HeightMap terrainHeightMap1 = HeightMapPerlin(mapWidth, mapLength);
     HeightMap terrainHeightMap2 = HeightMapRandom(mapWidth, mapLength);
+    HeightMap terrainHeightMap3 = HeightMapRandom(mapWidth, mapLength);
 
     HeightMapOctaves octaves = HeightMapOctaves(mapWidth, mapLength);
     octaves.AddOctave(&terrainHeightMap1);
     octaves.AddOctave(&terrainHeightMap2);
+    octaves.AddOctave(&terrainHeightMap3);
 
-
-    octaves.RemoveOctave(1);
-    HeightMap terrainHeightMap = (HeightMap)octaves;
-
-    Mesh terrainMesh(terrainHeightMap);
+    Mesh terrainMesh((HeightMap)octaves);
 
     VertexArray terrainVA;
     VertexBuffer terrainVB(terrainMesh.m_Vertices, 2 * 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
@@ -194,36 +197,73 @@
 
         ImGui::Begin("Regenerate Terrain");
 
-        ImGui::Text("Height Map Type:");
-        ImGui::RadioButton("Random", &currMode, RANDOM);
-        ImGui::RadioButton("Uniform", &currMode, UNIFORM);
-        ImGui::RadioButton("Perlin Noise", &currMode, PERLIN);
-        ImGui::RadioButton("Diamond Square", &currMode, DIAMOND_SQUARE);
-        ImGui::RadioButton("Simplex Noise", &currMode, SIMPLEX);
-
-            ImGui::SliderInt("Width", &mapWidth, 5, 50);
+        ImGui::SliderInt("Width", &mapWidth, 5, 50);
         ImGui::SliderInt("Length", &mapLength, 5, 50);
         if (ImGui::Button("Regenerate"))
         {
-            switch (currMode)
+            octaves.Reset();
+            switch (octave1Mode)
             {
             case UNIFORM:
-                terrainHeightMap = HeightMapUniform(mapWidth, mapLength, 0.5f);
+                terrainHeightMap1 = HeightMapUniform(mapWidth, mapLength, 0.5f);
                 break;
             case RANDOM:
-                terrainHeightMap = HeightMapRandom(mapWidth, mapLength);
+                terrainHeightMap1 = HeightMapRandom(mapWidth, mapLength);
                 break;
             case PERLIN:
-                terrainHeightMap = HeightMapPerlin(mapWidth, mapLength);
+                terrainHeightMap1 = HeightMapPerlin(mapWidth, mapLength);
                 break;
             case DIAMOND_SQUARE:
-                terrainHeightMap = HeightMapDiamondSquare(mapWidth, mapLength);
+                terrainHeightMap1 = HeightMapDiamondSquare(mapWidth, mapLength);
                 break;
             case SIMPLEX:
-                terrainHeightMap = HeightMapSimplex(mapWidth, mapLength);
+                terrainHeightMap1 = HeightMapSimplex(mapWidth, mapLength);
                 break;
             }
-            terrainMesh.Regenerate(terrainHeightMap);
+            octaves.AddOctave(&terrainHeightMap1);
+
+            switch (octave2Mode)
+            {
+                case UNIFORM:
+                    terrainHeightMap2 = HeightMapUniform(mapWidth, mapLength, 0.5f);
+                    break;
+                case RANDOM:
+                    terrainHeightMap2 = HeightMapRandom(mapWidth, mapLength);
+                    break;
+                case PERLIN:
+                    terrainHeightMap2 = HeightMapPerlin(mapWidth, mapLength);
+                    break;
+                case DIAMOND_SQUARE:
+                    terrainHeightMap2 = HeightMapDiamondSquare(mapWidth, mapLength);
+                    break;
+                case SIMPLEX:
+                    terrainHeightMap2 = HeightMapSimplex(mapWidth, mapLength);
+                    break;
+            }
+            if(octave2Active)
+                octaves.AddOctave(&terrainHeightMap2);
+
+            switch (octave3Mode)
+            {
+                case UNIFORM:
+                    terrainHeightMap3 = HeightMapUniform(mapWidth, mapLength, 0.5f);
+                    break;
+                case RANDOM:
+                    terrainHeightMap3 = HeightMapRandom(mapWidth, mapLength);
+                    break;
+                case PERLIN:
+                    terrainHeightMap3 = HeightMapPerlin(mapWidth, mapLength);
+                    break;
+                case DIAMOND_SQUARE:
+                    terrainHeightMap3 = HeightMapDiamondSquare(mapWidth, mapLength);
+                    break;
+                case SIMPLEX:
+                    terrainHeightMap3 = HeightMapSimplex(mapWidth, mapLength);
+                    break;
+            }
+            if (octave3Active)
+                octaves.AddOctave(&terrainHeightMap3);
+            terrainMesh.Regenerate((HeightMap)octaves);
             terrainVA.Bind(); // need to bind correct VA, otherwise it may add to waterVA
             terrainVB.AssignData(terrainMesh.m_Vertices, 2 * 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
             terrainIB.AssignData(terrainMesh.m_Indices, 6 * (mapWidth - 1) * (mapLength - 1), DRAW_MODE::STATIC);
@@ -239,6 +279,35 @@
         }
         ImGui::Checkbox("Water", &water); // display water
         ImGui::Checkbox("Auto Rotate", &rot); // toggle auto rotate
+
+        ImGui::End();
+
+        ImGui::Begin("Octaves");
+
+        ImGui::Text("Octave 1 Type:");
+        ImGui::RadioButton("Random", &octave1Mode, RANDOM);
+        ImGui::RadioButton("Uniform", &octave1Mode, UNIFORM);
+        ImGui::RadioButton("Perlin Noise", &octave1Mode, PERLIN);
+        ImGui::RadioButton("Diamond Square", &octave1Mode, DIAMOND_SQUARE);
+        ImGui::RadioButton("Simplex Noise", &octave1Mode, SIMPLEX);
+        ImGui::Separator();
+
+        ImGui::Checkbox("Octave 2 active", &octave2Active);
+        ImGui::Text("Octave 2 Type:");
+        ImGui::RadioButton("Random 2", &octave2Mode, RANDOM);
+        ImGui::RadioButton("Uniform 2", &octave2Mode, UNIFORM);
+        ImGui::RadioButton("Perlin Noise 2", &octave2Mode, PERLIN);
+        ImGui::RadioButton("Diamond Square 2", &octave2Mode, DIAMOND_SQUARE);
+        ImGui::RadioButton("Simplex Noise 2", &octave2Mode, SIMPLEX);
+        ImGui::Separator();
+
+        ImGui::Checkbox("Octave 3 active", &octave3Active);
+        ImGui::Text("Octave 3 Type:");
+        ImGui::RadioButton("Random 3", &octave3Mode, RANDOM);
+        ImGui::RadioButton("Uniform 3", &octave3Mode, UNIFORM);
+        ImGui::RadioButton("Perlin Noise 3", &octave3Mode, PERLIN);
+        ImGui::RadioButton("Diamond Square 3", &octave3Mode, DIAMOND_SQUARE);
+        ImGui::RadioButton("Simplex Noise 3", &octave3Mode, SIMPLEX);
 
         ImGui::End();
 

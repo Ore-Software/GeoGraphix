@@ -9,8 +9,8 @@ public:
 
 	void AddOctave(HeightMap* octave);
 	void RemoveOctave(int index);
+	void Reset();
 	void Generate() override;
 
-private:
 	std::vector<HeightMap*> m_Octaves;
 };

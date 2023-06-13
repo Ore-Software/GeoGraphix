@@ -24,6 +24,11 @@ void HeightMapOctaves::RemoveOctave(int index)
 		std::cerr << "Attempted to remove invalid octave index." << std::endl;
 }
 
+void HeightMapOctaves::Reset()
+{
+	m_Octaves.clear();
+}
+
 void HeightMapOctaves::Generate()
 {
 	m_Map.clear();
