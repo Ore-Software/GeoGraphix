@@ -19,6 +19,7 @@
 #include "HeightMap/HeightMapPerlin.h"
 #include "HeightMap/HeightMapDiamondSquare.h"
 #include "HeightMap/HeightMapSimplex.h"
+#include "HeightMap/HeightMapOctaves.h"
 #include "Mesh.h"
 
     int main()
@@ -46,7 +47,17 @@
 
     int currMode = RANDOM;
 
-    HeightMap terrainHeightMap = HeightMapRandom(mapWidth, mapLength);
+    /*HeightMap terrainHeightMap = HeightMapRandom(mapWidth, mapLength);*/
+    HeightMap terrainHeightMap1 = HeightMapPerlin(mapWidth, mapLength);
+    HeightMap terrainHeightMap2 = HeightMapRandom(mapWidth, mapLength);
+
+    HeightMapOctaves octaves = HeightMapOctaves(mapWidth, mapLength);
+    octaves.AddOctave(&terrainHeightMap1);
+    octaves.AddOctave(&terrainHeightMap2);
+
+
+    octaves.RemoveOctave(1);
+    HeightMap terrainHeightMap = (HeightMap)octaves;
 
     Mesh terrainMesh(terrainHeightMap);
 
