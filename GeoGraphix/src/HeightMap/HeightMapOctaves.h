@@ -9,7 +9,7 @@ public:
 
 	void AddOctave(std::pair<bool, HeightMap*> octave);
 	void RemoveOctave(int index);
-	void Reset();
+	void Reset(int width, int length);
 	void Generate() override;
 
 	std::vector<std::pair<bool, HeightMap*>> m_Octaves;

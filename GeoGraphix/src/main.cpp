@@ -202,7 +202,7 @@
         ImGui::SliderInt("Length", &mapLength, 5, 50);
         if (ImGui::Button("Regenerate"))
         {
-            octaves.Reset();
+            octaves.Reset(mapWidth, mapLength);
             switch (octave1Mode)
             {
             case UNIFORM:
