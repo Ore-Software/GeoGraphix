@@ -49,6 +49,7 @@
     int octave2Mode = RANDOM;
     int octave3Mode = RANDOM;
 
+    bool octave1Active = true;
     bool octave2Active = true;
     bool octave3Active = true;
 
@@ -58,9 +59,9 @@
     HeightMap terrainHeightMap3 = HeightMapRandom(mapWidth, mapLength);
 
     HeightMapOctaves octaves = HeightMapOctaves(mapWidth, mapLength);
-    octaves.AddOctave(&terrainHeightMap1);
-    octaves.AddOctave(&terrainHeightMap2);
-    octaves.AddOctave(&terrainHeightMap3);
+    octaves.AddOctave(std::pair<bool, HeightMap*>(octave1Active, &terrainHeightMap1));
+    octaves.AddOctave(std::pair<bool, HeightMap*>(octave2Active, &terrainHeightMap2));
+    octaves.AddOctave(std::pair<bool, HeightMap*>(octave3Active, &terrainHeightMap3));
 
     Mesh terrainMesh((HeightMap)octaves);
 
@@ -220,7 +221,7 @@
                 terrainHeightMap1 = HeightMapSimplex(mapWidth, mapLength);
                 break;
             }
-            octaves.AddOctave(&terrainHeightMap1);
+            octaves.AddOctave(std::pair<bool, HeightMap*>(octave1Active, &terrainHeightMap1));
 
             switch (octave2Mode)
             {
@@ -240,8 +241,7 @@
                     terrainHeightMap2 = HeightMapSimplex(mapWidth, mapLength);
                     break;
             }
-            if(octave2Active)
-                octaves.AddOctave(&terrainHeightMap2);
+            octaves.AddOctave(std::pair<bool, HeightMap*>(octave2Active, &terrainHeightMap2));
 
             switch (octave3Mode)
             {
@@ -261,8 +261,8 @@
                     terrainHeightMap3 = HeightMapSimplex(mapWidth, mapLength);
                     break;
             }
-            if (octave3Active)
-                octaves.AddOctave(&terrainHeightMap3);
+            octaves.AddOctave(std::pair<bool, HeightMap*>(octave3Active, &terrainHeightMap3));
+
             terrainMesh.Regenerate((HeightMap)octaves);
             terrainVA.Bind(); // need to bind correct VA, otherwise it may add to waterVA
             terrainVB.AssignData(terrainMesh.m_Vertices, 2 * 3 * mapWidth * mapLength * sizeof(float), DRAW_MODE::STATIC);
@@ -284,6 +284,7 @@
 
         ImGui::Begin("Octaves");
 
+        ImGui::Checkbox("Octave 1 active", &octave1Active);
         ImGui::Text("Octave 1 Type:");
         ImGui::RadioButton("Random", &octave1Mode, RANDOM);
         ImGui::RadioButton("Uniform", &octave1Mode, UNIFORM);

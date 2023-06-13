@@ -7,10 +7,10 @@ class HeightMapOctaves : public HeightMap
 public:
 	HeightMapOctaves(int width, int length);
 
-	void AddOctave(HeightMap* octave);
+	void AddOctave(std::pair<bool, HeightMap*> octave);
 	void RemoveOctave(int index);
 	void Reset();
 	void Generate() override;
 
-	std::vector<HeightMap*> m_Octaves;
+	std::vector<std::pair<bool, HeightMap*>> m_Octaves;
 };

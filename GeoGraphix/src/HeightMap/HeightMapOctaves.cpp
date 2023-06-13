@@ -7,7 +7,7 @@ HeightMapOctaves::HeightMapOctaves(int width, int length)
 {
 }
 
-void HeightMapOctaves::AddOctave(HeightMap* octave)
+void HeightMapOctaves::AddOctave(std::pair<bool, HeightMap*> octave)
 {
 	m_Octaves.push_back(octave);
 	Generate();
@@ -35,11 +35,14 @@ void HeightMapOctaves::Generate()
 	m_Map.resize(m_Width * m_Length);
 	for (int k = 0; k < m_Octaves.size(); k++)
 	{
-		for (int j = 0; j < m_Length; j++)
+		if (m_Octaves[k].first)
 		{
-			for (int i = 0; i < m_Width; i++)
+			for (int j = 0; j < m_Length; j++)
 			{
-				m_Map[j * m_Width + i] += m_Octaves[k]->m_Map[j * m_Width + i] * pow(2, -k);
+				for (int i = 0; i < m_Width; i++)
+				{
+					m_Map[j * m_Width + i] += m_Octaves[k].second->m_Map[j * m_Width + i] * pow(2, -k);
+				}
 			}
 		}
 	}
